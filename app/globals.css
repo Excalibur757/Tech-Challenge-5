@@ -24,3 +24,61 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Estilos de Contraste */
+.contrast-normal {
+  --bg-primary: #ffffff;
+  --text-primary: #000000;
+  --bg-secondary: #f3f4f6;
+  --text-secondary: #374151;
+  --border-color: #d1d5db;
+}
+
+.contrast-high {
+  --bg-primary: #ffffff;
+  --text-primary: #000000;
+  --bg-secondary: #e5e7eb;
+  --text-secondary: #000000;
+  --border-color: #000000;
+  /* Aumenta contraste */
+  filter: contrast(1.2);
+}
+
+.contrast-dark {
+  --bg-primary: #1a1a1a;
+  --text-primary: #ffffff;
+  --bg-secondary: #2d2d2d;
+  --text-secondary: #e5e7eb;
+  --border-color: #4a4a4a;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Aplicar contrastes aos elementos */
+.contrast-dark .bg-white {
+  background-color: #2d2d2d !important;
+}
+
+.contrast-dark .text-gray-800,
+.contrast-dark .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+.contrast-dark .border-gray-200 {
+  border-color: #4a4a4a !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}

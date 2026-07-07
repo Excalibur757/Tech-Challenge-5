@@ -82,3 +82,26 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* Background helper classes for project-wide consistency */
+.bg-default {
+  background-image: url('/capa-home.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  position: relative !important;
+  background-attachment: fixed !important;
+}
+
+.bg-login {
+  background-image: url('/capa-Login.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  position: relative !important;
+  background-attachment: fixed
+}

@@ -39,11 +39,8 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-end px-8"
+      className="min-h-screen flex items-center justify-end px-8 bg-login"
       style={{
-        backgroundImage: 'url(/capa-Login.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
         backgroundColor: '#f5f5f5',
         paddingRight: 55,
       }}

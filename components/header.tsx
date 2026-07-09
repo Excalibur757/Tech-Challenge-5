@@ -9,8 +9,19 @@ export default function Header() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
+  function syncUserName() {
+    if (typeof window === "undefined") return;
+
+    const storedName = localStorage.getItem("authName") || localStorage.getItem("authUser") || null;
+    setUser(storedName);
+  }
+
   useEffect(() => {
-    setUser(typeof window !== "undefined" ? localStorage.getItem("authUser") : null);
+    syncUserName();
+
+    const handleStorage = () => syncUserName();
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   useEffect(() => {
@@ -29,6 +40,7 @@ export default function Header() {
       localStorage.removeItem("authToken");
       localStorage.removeItem("authUser");
       localStorage.removeItem("authName");
+      localStorage.removeItem("authPassword");
     }
     setMenuOpen(false);
     router.push("/login");
@@ -69,6 +81,17 @@ export default function Header() {
               >
                 <span aria-hidden="true">⚙️</span>
                 <span>Configurações</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  router.push("/perfil");
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+              >
+                <span aria-hidden="true">👤</span>
+                <span>Perfil</span>
               </button>
               <button
                 type="button"

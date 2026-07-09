@@ -19,6 +19,7 @@ export default function LoginPage() {
 
     localStorage.setItem("authToken", "demo-token");
     localStorage.setItem("authUser", username);
+    localStorage.setItem("authPassword", password);
     router.push("/");
   }
 
@@ -32,6 +33,7 @@ export default function LoginPage() {
     localStorage.setItem("authToken", "demo-token");
     localStorage.setItem("authUser", username);
     localStorage.setItem("authName", fullName);
+    localStorage.setItem("authPassword", password);
     router.push("/");
   }
 

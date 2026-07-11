@@ -41,7 +41,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen dark:bg-black">
+    <main className="min-h-screen">
       <Header />
       
       {/* // Conteúdo principal */}

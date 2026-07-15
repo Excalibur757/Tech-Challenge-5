@@ -38,7 +38,8 @@ export default function Home() {
 
   // Carregar todas as configurações ao iniciar
   useEffect(() => {
-    // Carregar configurações de acessibilidade
+    // 💡 Dica: As configurações de acessibilidade são carregadas dos cookies
+    // para manter as preferências do usuário entre as páginas
     try {
       const savedSettings = Cookies.get("accessibilitySettings");
       if (savedSettings) {
@@ -49,7 +50,8 @@ export default function Home() {
       console.error("Erro ao carregar configurações:", error);
     }
 
-    // Carregar tarefas
+    // 💡 Dica: Suas tarefas são salvas automaticamente no navegador
+    // Você pode acessá-las mesmo após fechar e reabrir a página
     const savedTasks = Cookies.get("tasks");
     if (savedTasks) {
       try {
@@ -65,7 +67,8 @@ export default function Home() {
       }
     }
 
-    // Carregar modo
+    // 💡 Dica: O modo de visualização (simplificado ou completo) é lembrado
+    // para oferecer a melhor experiência para você
     const savedMode = Cookies.get("todoMode");
     if (savedMode === "simplificado" || savedMode === "completo") {
       setMode(savedMode);
@@ -87,12 +90,16 @@ export default function Home() {
     }
   }, [mode, isLoading]);
 
-  // Função auxiliar para verificar se deve pedir confirmação
+  // 💡 Dica: Esta função verifica se você ativou a confirmação extra
+  // nas configurações de acessibilidade. Quando ativada, você será
+  // perguntado antes de excluir ou editar tarefas, evitando erros.
   const shouldConfirm = () => {
     return extraConfirmation === true;
   };
 
-  // Adicionar tarefa com prioridade
+  // 💡 Dica: Adicione suas tarefas aqui. Você pode definir a prioridade
+  // antes de adicionar - use 🔴 Alta para tarefas urgentes,
+  // 🟡 Média para tarefas importantes e 🟢 Baixa para tarefas simples.
   const addTask = () => {
     if (newTask.trim() === "") return;
     
@@ -110,7 +117,9 @@ export default function Home() {
     setNewTaskPriority("media");
   };
 
-  // Remover tarefa com confirmação baseada nas configurações
+  // 💡 Dica: Ao excluir uma tarefa, você será perguntado se tem certeza
+  // (se a confirmação extra estiver ativada). Isso ajuda a evitar
+  // exclusões acidentais.
   const deleteTask = (id: string) => {
     const taskName = tasks.find(t => t.id === id)?.text || "esta tarefa";
     
@@ -129,7 +138,8 @@ export default function Home() {
     }
   };
 
-  // Alternar status da tarefa com feedback
+  // 💡 Dica: Clique no círculo ao lado da tarefa para marcar como concluída
+  // ou pendente. Tarefas concluídas ficam com um risco no texto.
   const toggleTask = (id: string) => {
     const task = tasks.find(t => t.id === id);
     if (task) {
@@ -140,7 +150,8 @@ export default function Home() {
     }
   };
 
-  // Iniciar edição com confirmação baseada nas configurações
+  // 💡 Dica: Para editar uma tarefa no modo completo, clique no lápis ✏️
+  // Se a confirmação extra estiver ativada, você será perguntado antes de editar.
   const startEdit = (id: string, text: string) => {
     if (shouldConfirm()) {
       if (confirm(`Deseja editar a tarefa "${text}"?`)) {
@@ -169,7 +180,8 @@ export default function Home() {
     setEditText("");
   };
 
-  // Mudar prioridade da tarefa
+  // 💡 Dica: No modo completo, você pode clicar na prioridade da tarefa
+  // para alterá-la rapidamente entre Baixa, Média ou Alta.
   const changePriority = (id: string, priority: "baixa" | "media" | "alta") => {
     setTasks(tasks.map(task =>
       task.id === id ? { ...task, priority } : task
@@ -177,7 +189,8 @@ export default function Home() {
     setEditingPriority(null);
   };
 
-  // Adicionar subtarefa
+  // 💡 Dica: No modo completo, você pode adicionar subtarefas para
+  // dividir tarefas grandes em etapas menores e mais fáceis de gerenciar.
   const addSubtask = (taskId: string) => {
     if (newSubtask.trim() === "") return;
     setTasks(tasks.map(task =>
@@ -204,7 +217,7 @@ export default function Home() {
     ));
   };
 
-  // Remover subtarefa com confirmação baseada nas configurações
+  // Remover subtarefa
   const deleteSubtask = (taskId: string, subtaskId: string) => {
     const subtask = tasks
       .find(t => t.id === taskId)
@@ -251,7 +264,9 @@ export default function Home() {
       return 0;
     });
 
-  // Toggle mode
+  // 💡 Dica: Alterne entre o modo Simplificado (foco no essencial)
+  // e o modo Completo (com todas as funcionalidades) clicando no botão.
+  // O modo escolhido será lembrado para a próxima visita.
   const toggleMode = () => {
     const newMode = mode === "simplificado" ? "completo" : "simplificado";
     setMode(newMode);
@@ -297,7 +312,7 @@ export default function Home() {
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {mode === "simplificado" ? "🔹 Modo Simplificado" : "🔸 Modo Completo"}
               </p>
-              {/* Indicador de confirmação extra */}
+              {/* 💡 Dica: Este indicador mostra se a confirmação extra está ativada */}
               <div className="mt-1 text-xs">
                 <span className={`px-2 py-0.5 rounded-full ${extraConfirmation ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
                   {extraConfirmation ? '✅ Confirmação ativada' : '❌ Confirmação desativada'}
@@ -318,6 +333,7 @@ export default function Home() {
               <button
                 onClick={toggleMode}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap"
+                title={mode === "simplificado" ? "Ativar modo completo com mais recursos" : "Voltar ao modo simplificado mais focado"}
               >
                 <span>{mode === "simplificado" ? "🔧" : "🧊"}</span>
                 {mode === "simplificado" ? "Completo" : "Simplificado"}
@@ -326,7 +342,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Estatísticas com taxa de conclusão */}
+        {/* 💡 Dica: Acompanhe seu progresso com as estatísticas */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center">
             <div className="text-2xl font-bold text-blue-600">{totalTasks}</div>
@@ -369,7 +385,7 @@ export default function Home() {
               </button>
             </div>
             
-            {/* Seletor de prioridade para nova tarefa - visível nos dois modos */}
+            {/* 💡 Dica: Escolha a prioridade da sua tarefa antes de adicionar */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Prioridade:</span>
               <div className="flex gap-2">
@@ -386,6 +402,7 @@ export default function Home() {
                         ? "bg-blue-600 text-white"
                         : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                     }`}
+                    title={`Prioridade ${option.value}`}
                   >
                     {option.label}
                   </button>
@@ -447,7 +464,7 @@ export default function Home() {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  {/* Checkbox */}
+                  {/* 💡 Dica: Clique no círculo para marcar como concluída */}
                   <button
                     onClick={() => toggleTask(task.id)}
                     className={`mt-1 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
@@ -456,6 +473,7 @@ export default function Home() {
                         : "border-gray-300 dark:border-gray-600 hover:border-blue-500"
                     }`}
                     aria-label={task.completed ? "Marcar como pendente" : "Marcar como concluída"}
+                    title={task.completed ? "Clique para reabrir a tarefa" : "Clique para concluir a tarefa"}
                   >
                     {task.completed && <span className="text-lg">✓</span>}
                   </button>
@@ -495,7 +513,7 @@ export default function Home() {
                           }`}>
                             {task.text}
                           </p>
-                          {/* Indicador de prioridade no modo simplificado */}
+                          {/* 💡 Dica: Ícones de prioridade no modo simplificado */}
                           {mode === "simplificado" && task.priority && (
                             <span className="text-lg" title={`Prioridade ${task.priority}`}>
                               {task.priority === "alta" && "🔴"}
@@ -508,7 +526,7 @@ export default function Home() {
                         {/* Detalhes extras - apenas no modo completo */}
                         {mode === "completo" && (
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {/* Prioridade com opção de edição */}
+                            {/* 💡 Dica: Clique na prioridade para alterá-la */}
                             {task.priority && (
                               <div className="relative">
                                 {editingPriority === task.id ? (
@@ -547,6 +565,7 @@ export default function Home() {
                                           ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                                           : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                                     }`}
+                                    title="Clique para alterar a prioridade"
                                   >
                                     {task.priority === "alta" && "🔴"}
                                     {task.priority === "media" && "🟡"}
@@ -589,6 +608,7 @@ export default function Home() {
                                     ? "bg-green-500 border-green-500 text-white"
                                     : "border-gray-300 dark:border-gray-600"
                                 }`}
+                                title={subtask.completed ? "Marcar como pendente" : "Marcar como concluída"}
                               >
                                 {subtask.completed && "✓"}
                               </button>
@@ -600,6 +620,7 @@ export default function Home() {
                               <button
                                 onClick={() => deleteSubtask(task.id, subtask.id)}
                                 className="text-red-500 hover:text-red-700 text-sm"
+                                title="Excluir subtarefa"
                               >
                                 ×
                               </button>
@@ -614,33 +635,37 @@ export default function Home() {
                   <div className="flex gap-1 shrink-0">
                     {mode === "completo" && !editingId && (
                       <>
+                        {/* 💡 Dica: Botão para gerenciar subtarefas */}
                         <button
                           onClick={() => setShowSubtasks(showSubtasks === task.id ? null : task.id)}
                           className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900 rounded-lg transition-colors"
-                          title="Subtarefas"
+                          title="Gerenciar subtarefas"
                         >
                           📋
                         </button>
+                        {/* 💡 Dica: Botão para adicionar notas */}
                         <button
                           onClick={() => setShowNotes(showNotes === task.id ? null : task.id)}
                           className="p-2 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900 rounded-lg transition-colors"
-                          title="Notas"
+                          title="Adicionar notas"
                         >
                           📝
                         </button>
+                        {/* 💡 Dica: Botão para editar a tarefa */}
                         <button
                           onClick={() => startEdit(task.id, task.text)}
                           className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
-                          title="Editar"
+                          title="Editar tarefa"
                         >
                           ✏️
                         </button>
                       </>
                     )}
+                    {/* 💡 Dica: Botão para excluir a tarefa */}
                     <button
                       onClick={() => deleteTask(task.id)}
                       className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
-                      title="Excluir"
+                      title="Excluir tarefa"
                     >
                       🗑️
                     </button>
@@ -726,6 +751,7 @@ export default function Home() {
                 }
               }}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              title="Marcar todas as tarefas como concluídas de uma vez"
             >
               ✓ Concluir Todas
             </button>
@@ -740,6 +766,7 @@ export default function Home() {
                 }
               }}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              title="Remover todas as tarefas já concluídas"
             >
               🗑️ Limpar Concluídas
             </button>

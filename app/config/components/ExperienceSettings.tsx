@@ -1,23 +1,14 @@
-import { Settings } from "../../../types/settings";
+// app/components/ExperienceSettings.tsx
+"use client";
+
+import type { Settings } from "../../../types/settings";
 
 interface ExperienceSettingsProps {
   settings: Settings;
-
-  handleContrastChange: (
-    value: Settings["contrastLevel"]
-  ) => void;
-
-  handleNavigationModeChange: (
-    value: Settings["navigationMode"]
-  ) => void;
-
-  handleExtraConfirmationChange: (
-    value: boolean
-  ) => void;
-
-  handleNotificationPreferenceChange: (
-    value: Settings["notificationPreference"]
-  ) => void;
+  handleContrastChange: (value: Settings["contrastLevel"]) => void;
+  handleNavigationModeChange: (value: Settings["navigationMode"]) => void;
+  handleExtraConfirmationChange: (value: boolean) => void;
+  handleNotificationPreferenceChange: (value: Settings["notificationPreference"]) => void;
 }
 
 export default function ExperienceSettings({
@@ -30,163 +21,102 @@ export default function ExperienceSettings({
   return (
     <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-6">
       <h2 className="text-xl font-semibold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2">
-        Configurações de Experiência
+        🎨 Configurações de Experiência
       </h2>
 
-      {/* Contraste */}
+      {/* 💡 Dica: Contraste mais alto ajuda pessoas com baixa visão */}
       <div className="space-y-3">
         <label className="font-medium text-gray-700 dark:text-gray-300 block">
           Nível de Contraste
         </label>
-
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          💡 Escolha o contraste que facilita a leitura para você
+        </p>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value: "normal", label: "Normal" },
-            { value: "high", label: "Alto" },
-            { value: "dark", label: "Escuro" },
+            { value: "normal", label: "Normal", description: "Cores padrão" },
+            { value: "high", label: "Alto", description: "Maior contraste" },
+            { value: "dark", label: "Escuro", description: "Fundo escuro" },
           ].map((option) => (
             <button
               key={option.value}
-              onClick={() =>
-                handleContrastChange(
-                  option.value as Settings["contrastLevel"]
-                )
-              }
+              onClick={() => handleContrastChange(option.value as Settings["contrastLevel"])}
               className={`p-3 rounded-lg border-2 transition-all ${
                 settings.contrastLevel === option.value
                   ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
                   : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
               }`}
+              title={option.description}
             >
-              <span className="text-gray-700 dark:text-gray-300">
-                {option.label}
-              </span>
+              <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{option.description}</p>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Modo de Navegação */}
-      <div className="space-y-3">
-        <label className="font-medium text-gray-700 dark:text-gray-300 block">
-          Modo de Navegação
-        </label>
-
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            {
-              value: "basic",
-              label: "Básico",
-              description: "Interface simplificada",
-            },
-            {
-              value: "advanced",
-              label: "Avançado",
-              description: "Recursos completos",
-            },
-          ].map((option) => (
-            <button
-              key={option.value}
-              onClick={() =>
-                handleNavigationModeChange(
-                  option.value as Settings["navigationMode"]
-                )
-              }
-              className={`p-4 rounded-lg border-2 transition-all text-left ${
-                settings.navigationMode === option.value
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
-                  : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
-              }`}
-            >
-              <div className="font-medium text-gray-800 dark:text-gray-200">
-                {option.label}
-              </div>
-
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {option.description}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Confirmação Extra */}
+      {/* 💡 Dica: Confirmar antes de ações importantes evita erros */}
       <div className="space-y-3">
         <label className="font-medium text-gray-700 dark:text-gray-300 block">
           Necessidade de Confirmação Extra
         </label>
-
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          💡 Quando ativado, você será perguntado antes de excluir ou editar tarefas
+        </p>
         <div className="flex gap-4">
           {[
-            { value: true, label: "Sim" },
-            { value: false, label: "Não" },
+            { value: true, label: "Sim", description: "Perguntar antes de ações" },
+            { value: false, label: "Não", description: "Ações diretas" },
           ].map((option) => (
             <button
               key={String(option.value)}
-              onClick={() =>
-                handleExtraConfirmationChange(option.value)
-              }
+              onClick={() => handleExtraConfirmationChange(option.value)}
               className={`px-6 py-3 rounded-lg border-2 transition-all ${
                 settings.extraConfirmation === option.value
                   ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
                   : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
               }`}
+              title={option.description}
             >
-              <span className="text-gray-700 dark:text-gray-300">
-                {option.label}
-              </span>
+              <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{option.description}</p>
             </button>
           ))}
         </div>
-
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {settings.extraConfirmation
-            ? "✅ Solicitar confirmação antes de ações importantes"
+          {settings.extraConfirmation 
+            ? "✅ Você será perguntado antes de ações importantes" 
             : "❌ Ações serão executadas sem confirmação extra"}
         </p>
       </div>
 
-      {/* Preferências de Notificação */}
+      {/* 💡 Dica: Escolha como quer receber lembretes e notificações */}
       <div className="space-y-3">
         <label className="font-medium text-gray-700 dark:text-gray-300 block">
           Lembretes e Notificações
         </label>
-
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          💡 Escolha como deseja ser notificado sobre suas tarefas
+        </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            {
-              value: "reminders",
-              label: "Apenas Lembretes",
-            },
-            {
-              value: "notifications",
-              label: "Apenas Notificações",
-            },
-            {
-              value: "both",
-              label: "Ambos",
-            },
-            {
-              value: "none",
-              label: "Nenhum",
-            },
+            { value: "reminders", label: "📅 Apenas Lembretes", description: "Receba lembretes" },
+            { value: "notifications", label: "🔔 Apenas Notificações", description: "Receba notificações" },
+            { value: "both", label: "📅🔔 Ambos", description: "Receba tudo" },
+            { value: "none", label: "🔕 Nenhum", description: "Sem notificações" },
           ].map((option) => (
             <button
               key={option.value}
-              onClick={() =>
-                handleNotificationPreferenceChange(
-                  option.value as Settings["notificationPreference"]
-                )
-              }
+              onClick={() => handleNotificationPreferenceChange(option.value as Settings["notificationPreference"])}
               className={`p-3 rounded-lg border-2 transition-all text-center ${
                 settings.notificationPreference === option.value
                   ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
                   : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
               }`}
+              title={option.description}
             >
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {option.label}
-              </span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{option.description}</p>
             </button>
           ))}
         </div>

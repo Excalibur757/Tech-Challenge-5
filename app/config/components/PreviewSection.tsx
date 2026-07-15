@@ -1,28 +1,34 @@
-import { Settings } from "../../../types/settings";
+// app/components/PreviewSection.tsx
+"use client";
+
+import type { Settings } from "../../../types/settings";
 
 interface PreviewSectionProps {
   settings: Settings;
 }
 
-export default function PreviewSection({
-  settings,
-}: PreviewSectionProps) {
+export default function PreviewSection({ settings }: PreviewSectionProps) {
   return (
     <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2 mb-4">
-        Visualização
+        👁️ Visualização
       </h2>
-
+      
+      {/* 💡 Dica: Veja como o texto fica com suas configurações */}
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        💡 Veja como o texto fica com as configurações que você escolheu
+      </p>
+      
       <div className="space-y-4">
         <p className="text-gray-800 dark:text-gray-200">
-          Este é um exemplo de como o texto será exibido com as configurações
-          atuais. Ajuste os controles acima para ver as mudanças em tempo real.
+          Este é um exemplo de como o texto será exibido com as configurações atuais.
+          Ajuste os controles acima para ver as mudanças em tempo real.
         </p>
-
+        
         <p className="text-gray-700 dark:text-gray-300">
-          <strong>Dica:</strong> Para idosos, recomenda-se fontes entre 18-22px,
-          espaçamento entre linhas de 1.5 a 2.0 e espaçamento entre letras de
-          1-2px para melhor legibilidade.
+          <strong>💡 Dica:</strong> Para idosos, recomenda-se fontes entre 18-22px, 
+          espaçamento entre linhas de 1.5 a 2.0 e espaçamento entre letras de 1-2px 
+          para melhor legibilidade.
         </p>
 
         <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
@@ -31,16 +37,16 @@ export default function PreviewSection({
           </p>
         </div>
 
+        {/* Exemplo de notificação */}
         <div className="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
           <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-            🔔{" "}
-            {settings.notificationPreference === "none"
-              ? "Notificações desativadas"
-              : settings.notificationPreference === "reminders"
-              ? "Apenas lembretes serão exibidos"
-              : settings.notificationPreference === "notifications"
-              ? "Apenas notificações serão exibidas"
-              : "Lembretes e notificações serão exibidos"}
+            🔔 {settings.notificationPreference === "none" 
+              ? "Notificações desativadas" 
+              : settings.notificationPreference === "reminders" 
+                ? "📅 Apenas lembretes serão exibidos" 
+                : settings.notificationPreference === "notifications" 
+                  ? "🔔 Apenas notificações serão exibidas" 
+                  : "📅🔔 Lembretes e notificações serão exibidos"}
           </p>
         </div>
       </div>

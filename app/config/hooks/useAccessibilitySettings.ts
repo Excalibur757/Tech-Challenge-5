@@ -14,13 +14,16 @@ import {
 
 export function useAccessibilitySettings() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-
+  const [initialSettings, setInitialSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(true); // Começa como true
   const [showSavedMessage, setShowSavedMessage] = useState(false);
 
   useEffect(() => {
-    setSettings(loadSettings());
+    const loadedSettings = loadSettings();
+    setSettings(loadedSettings);
+    setInitialSettings(loadedSettings); // Salva as configurações iniciais
+    setIsSaved(true); // Configurações carregadas estão salvas
     setIsLoading(false);
   }, []);
 
@@ -39,6 +42,7 @@ export function useAccessibilitySettings() {
     }
 
     setIsSaved(true);
+    setInitialSettings(settings); // Atualiza as configurações iniciais
     setShowSavedMessage(true);
 
     setTimeout(() => {
@@ -46,12 +50,13 @@ export function useAccessibilitySettings() {
     }, 3000);
   };
 
-    const resetToDefaults = () => {
+  const resetToDefaults = () => {
     clearSettings();
 
     setSettings(DEFAULT_SETTINGS);
-    setIsSaved(false);
-    };
+    setInitialSettings(DEFAULT_SETTINGS);
+    setIsSaved(true); // Resetado para default, está salvo
+  };
 
   const handleFontSizeChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -130,9 +135,11 @@ export function useAccessibilitySettings() {
     setIsSaved(false);
   };
 
-  const isDefaultSettings =
-    JSON.stringify(settings) ===
-    JSON.stringify(DEFAULT_SETTINGS);
+  // Verifica se as configurações atuais são diferentes das iniciais (não salvas)
+  const hasUnsavedChanges = JSON.stringify(settings) !== JSON.stringify(initialSettings);
+  
+  // Verifica se as configurações atuais são iguais ao default
+  const isDefaultSettings = JSON.stringify(settings) === JSON.stringify(DEFAULT_SETTINGS);
 
   return {
     settings,
@@ -141,6 +148,7 @@ export function useAccessibilitySettings() {
     isSaved,
     showSavedMessage,
     isDefaultSettings,
+    hasUnsavedChanges, // Novo: indica se há mudanças não salvas
 
     handleSaveSettings,
     resetToDefaults,

@@ -1,3 +1,4 @@
+// app/configuracoes/page.tsx
 "use client";
 
 import Header from "@/components/header";
@@ -11,79 +12,68 @@ import PreviewSection from "./components/PreviewSection";
 import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
 
-
 export default function Home() {
-  // Estados para os controles
   const {
-  settings,
+    settings,
+    isLoading,
+    isSaved,
+    showSavedMessage,
+    isDefaultSettings,
+    hasUnsavedChanges, // Nova prop
+    handleSaveSettings,
+    resetToDefaults,
+    handleFontSizeChange,
+    handleLineHeightChange,
+    handleLetterSpacingChange,
+    handleContrastChange,
+    handleNavigationModeChange,
+    handleExtraConfirmationChange,
+    handleNotificationPreferenceChange,
+  } = useAccessibilitySettings();
 
-  isLoading,
-  isSaved,
-  showSavedMessage,
-  isDefaultSettings,
-
-  handleSaveSettings,
-  resetToDefaults,
-
-  handleFontSizeChange,
-  handleLineHeightChange,
-  handleLetterSpacingChange,
-
-  handleContrastChange,
-  handleNavigationModeChange,
-  handleExtraConfirmationChange,
-  handleNotificationPreferenceChange,
-} = useAccessibilitySettings();
   if (isLoading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <main className="min-h-screen">
       <Header />
       
-      {/* // Conteúdo principal */}
       <div className="max-w-4xl mx-auto p-6 space-y-8">
-        
-      <ConfigHeader /* Header para as configurações */
+        <ConfigHeader 
           isSaved={isSaved}
           isDefaultSettings={isDefaultSettings}
-      />
+          hasUnsavedChanges={hasUnsavedChanges}
+        />
 
-      <SavedMessage /* Mensagem de configurações salvas */
-          visible={showSavedMessage}
-      />
+        <SavedMessage visible={showSavedMessage} />
 
-      <TextSettings /* Configurações de texto */
+        <TextSettings
           settings={settings}
           handleFontSizeChange={handleFontSizeChange}
           handleLineHeightChange={handleLineHeightChange}
           handleLetterSpacingChange={handleLetterSpacingChange}
-      />
+        />
 
-      <ExperienceSettings /* Configurações de experiência */
+        <ExperienceSettings
           settings={settings}
           handleContrastChange={handleContrastChange}
           handleNavigationModeChange={handleNavigationModeChange}
           handleExtraConfirmationChange={handleExtraConfirmationChange}
-          handleNotificationPreferenceChange={
-            handleNotificationPreferenceChange
-          }
-          />
-        {/* Seção de pré-visualização */}
-        <PreviewSection settings={settings} /> 
+          handleNotificationPreferenceChange={handleNotificationPreferenceChange}
+        />
 
-        {/* Botões de Ação */}
+        <PreviewSection settings={settings} />
+
         <ActionButtons
           onSave={handleSaveSettings}
           onReset={resetToDefaults}
         />
 
-        <StatusBar /* Barra de status */
+        <StatusBar
           isSaved={isSaved}
           isDefaultSettings={isDefaultSettings}
+          hasUnsavedChanges={hasUnsavedChanges}
         />
       </div>
     </main>

@@ -105,3 +105,47 @@ body {
   position: relative !important;
   background-attachment: fixed
 }
+
+/* Estilos de Contraste */
+.contrast-normal {
+  /* Cores normais */
+}
+
+.contrast-high {
+  filter: contrast(1.2);
+}
+
+.contrast-dark {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.contrast-dark .bg-white {
+  background-color: #2d2d2d !important;
+}
+
+.contrast-dark .text-gray-800,
+.contrast-dark .text-gray-700,
+.contrast-dark .text-gray-600 {
+  color: #e5e7eb !important;
+}
+
+.contrast-dark .border-gray-200 {
+  border-color: #4a4a4a !important;
+}
+
+/* Animação */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}

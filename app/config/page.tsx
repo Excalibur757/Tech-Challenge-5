@@ -10,7 +10,7 @@ import ExperienceSettings from "./components/ExperienceSettings";
 import PreviewSection from "./components/PreviewSection";
 import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
-
+import Botao from "@/utils/botao";
 
 export default function Home() {
   // Estados para os controles
@@ -46,7 +46,16 @@ export default function Home() {
       
       {/* // Conteúdo principal */}
       <div className="max-w-4xl mx-auto p-6 space-y-8">
-        
+        <div className="flex justify-start">
+          <Botao
+            onClick={() => (window.location.href = "/")}
+            title="Apertando este botão, você voltará para a home"
+          >
+            <span className="text-lg">←</span>
+            <span>Voltar</span>
+          </Botao>
+        </div>
+
       <ConfigHeader /* Header para as configurações */
           isSaved={isSaved}
           isDefaultSettings={isDefaultSettings}

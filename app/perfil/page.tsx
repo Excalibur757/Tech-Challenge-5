@@ -7,6 +7,7 @@ import SavedMessage from "./components/SavedMessage";
 import ProfileForm from "./components/ProfileForm";
 import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
+import Botao from "@/utils/botao";
 
 type ProfileData = {
   name: string;
@@ -132,9 +133,20 @@ export default function PerfilPage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
           minHeight: 'calc(100vh - 4rem)',
         }}
       >
+        <div className="flex justify-start">
+          <Botao
+            onClick={() => window.location.href = "/"}
+            title="Apertando este botão, você voltará para a home"
+          >
+            <span className="text-lg">←</span>
+            <span>Voltar</span>
+          </Botao>
+        </div>
+
         <ProfileHeader isSaved={isSaved} isEdited={!isSaved} />
         <SavedMessage visible={showSavedMessage} />
         <ProfileForm

@@ -18,9 +18,12 @@ export function useAccessibilitySettings() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info" | "warning">("success");
 
   useEffect(() => {
     setSettings(loadSettings());
+    setIsSaved(true);
     setIsLoading(false);
   }, []);
 
@@ -30,15 +33,13 @@ export function useAccessibilitySettings() {
     }
   }, [settings, isLoading]);
 
-  const handleSaveSettings = () => {
-    const success = saveSettings(settings);
+  const hideAlert = () => {
+    setShowSavedMessage(false);
+  };
 
-    if (!success) {
-      alert("Erro ao salvar.");
-      return;
-    }
-
-    setIsSaved(true);
+  const showWarning = (message: string) => {
+    setAlertType("warning");
+    setAlertMessage(message);
     setShowSavedMessage(true);
 
     setTimeout(() => {
@@ -46,12 +47,44 @@ export function useAccessibilitySettings() {
     }, 3000);
   };
 
-    const resetToDefaults = () => {
+  const handleSaveSettings = () => {
+    if (isSaved) {
+      showWarning("Não há alterações para serem salvas");
+      return;
+    }
+
+    const success = saveSettings(settings);
+
+    if (!success) {
+      setAlertType("error");
+      setAlertMessage("Erro ao salvar.");
+      setShowSavedMessage(true);
+      return;
+    }
+
+    setIsSaved(true);
+    setAlertType("success");
+    setAlertMessage("Configurações salvas com sucesso!");
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  };
+
+  const resetToDefaults = () => {
     clearSettings();
 
     setSettings(DEFAULT_SETTINGS);
     setIsSaved(false);
-    };
+    setAlertType("success");
+    setAlertMessage("Configurações restauradas com sucesso!");
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  };
 
   const handleFontSizeChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -140,10 +173,14 @@ export function useAccessibilitySettings() {
     isLoading,
     isSaved,
     showSavedMessage,
+    alertMessage,
+    alertType,
     isDefaultSettings,
 
     handleSaveSettings,
     resetToDefaults,
+    hideAlert,
+    showWarning,
 
     handleFontSizeChange,
     handleLineHeightChange,

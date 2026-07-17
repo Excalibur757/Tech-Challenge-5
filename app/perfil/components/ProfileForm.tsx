@@ -95,7 +95,7 @@ export default function ProfileForm({
             <button
               type="button"
               onClick={() => onWantChangePasswordChange(true)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium ${
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${
                 wantChangePassword ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-700"
               }`}
             >
@@ -104,7 +104,7 @@ export default function ProfileForm({
             <button
               type="button"
               onClick={() => onWantChangePasswordChange(false)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium ${
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${
                 !wantChangePassword ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-700"
               }`}
             >

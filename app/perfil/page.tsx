@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import ProfileHeader from "./components/ProfileHeader";
-import SavedMessage from "./components/SavedMessage";
 import ProfileForm from "./components/ProfileForm";
 import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
+import Botao from "@/utils/botao";
+import Alarme from "@/utils/alarme";
+import Modal from "@/utils/modal";
 
 type ProfileData = {
   name: string;
@@ -29,8 +31,12 @@ export default function PerfilPage() {
   const [initialValues, setInitialValues] = useState<ProfileData>(initialProfile);
   const [isSaved, setIsSaved] = useState(true);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
+  const [saveMessageType, setSaveMessageType] = useState<"success" | "error" | "info" | "warning">("success");
+  const [saveMessageText, setSaveMessageText] = useState("Perfil atualizado com sucesso!");
   const [wantChangePassword, setWantChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
+  const [pendingAction, setPendingAction] = useState<"save" | "reset" | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [savedPassword, setSavedPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -63,7 +69,20 @@ export default function PerfilPage() {
     setShowSavedMessage(false);
   }
 
-  function handleSave() {
+  function performSave() {
+    const hasProfileChanges =
+      profileData.name !== initialValues.name ||
+      profileData.age !== initialValues.age ||
+      profileData.email !== initialValues.email ||
+      profileData.phone !== initialValues.phone;
+
+    if (!hasProfileChanges && !wantChangePassword) {
+      setSaveMessageType("warning");
+      setSaveMessageText("Não há alterações para serem salvas");
+      setShowSavedMessage(true);
+      return;
+    }
+
     if (wantChangePassword) {
       if (!currentPassword.trim()) {
         setPasswordError("Informe a senha atual para alterar a senha.");
@@ -105,6 +124,8 @@ export default function PerfilPage() {
     setProfileData((prev) => ({ ...prev, password: "" }));
     setCurrentPassword("");
     setIsSaved(true);
+    setSaveMessageType("success");
+    setSaveMessageText("Perfil atualizado com sucesso!");
     setShowSavedMessage(true);
 
     window.setTimeout(() => {
@@ -112,13 +133,61 @@ export default function PerfilPage() {
     }, 2200);
   }
 
-  function handleReset() {
+  function attemptSave() {
+    setPendingAction("save");
+    setShowConfirmModal(true);
+  }
+
+  function performReset() {
+    const hasResettableChanges =
+      !isSaved ||
+      wantChangePassword ||
+      currentPassword.trim().length > 0 ||
+      profileData.password.trim().length > 0;
+
+    if (!hasResettableChanges) {
+      setSaveMessageType("warning");
+      setSaveMessageText("Não há alterações para serem restauradas");
+      setShowSavedMessage(true);
+
+      window.setTimeout(() => {
+        setShowSavedMessage(false);
+      }, 2200);
+      return;
+    }
+
     setProfileData({ ...initialValues, password: "" });
     setCurrentPassword("");
     setWantChangePassword(false);
     setPasswordError("");
     setIsSaved(true);
-    setShowSavedMessage(false);
+    setSaveMessageType("success");
+    setSaveMessageText("Alterações restauradas com sucesso!");
+    setShowSavedMessage(true);
+
+    window.setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 2200);
+  }
+
+  function attemptReset() {
+    setPendingAction("reset");
+    setShowConfirmModal(true);
+  }
+
+  function handleConfirmAction() {
+    setShowConfirmModal(false);
+    if (pendingAction === "save") {
+      performSave();
+    } else if (pendingAction === "reset") {
+      performReset();
+    }
+    setPendingAction(null);
+  }
+
+  function handleCancelAction() {
+    setShowConfirmModal(false);
+    setPendingAction(null);
   }
 
   return (
@@ -132,11 +201,27 @@ export default function PerfilPage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
           minHeight: 'calc(100vh - 4rem)',
         }}
       >
+        <div className="flex justify-start">
+          <Botao
+            onClick={() => window.location.href = "/"}
+            title="Apertando este botão, você voltará para a home"
+          >
+            <span className="text-lg">←</span>
+            <span>Voltar</span>
+          </Botao>
+        </div>
+
         <ProfileHeader isSaved={isSaved} isEdited={!isSaved} />
-        <SavedMessage visible={showSavedMessage} />
+        <Alarme
+          visible={showSavedMessage}
+          message={saveMessageText}
+          type={saveMessageType}
+          onClose={() => setShowSavedMessage(false)}
+        />
         <ProfileForm
           profileData={profileData}
           onFieldChange={handleFieldChange}
@@ -147,8 +232,21 @@ export default function PerfilPage() {
           passwordError={passwordError}
           savedPassword={savedPassword}
         />
-        <ActionButtons onSave={handleSave} onReset={handleReset} />
+        <ActionButtons onSave={attemptSave} onReset={attemptReset} />
         <StatusBar isSaved={isSaved} isEdited={!isSaved} />
+        <Modal
+          visible={showConfirmModal}
+          title={pendingAction === "save" ? "Confirmar salvamento" : "Confirmar restauração"}
+          description={
+            pendingAction === "save"
+              ? "Tem certeza de que deseja salvar as alterações no seu perfil?"
+              : "Tem certeza de que deseja restaurar os valores e cancelar as alterações?"
+          }
+          confirmLabel={pendingAction === "save" ? "Sim, salvar" : "Sim, restaurar"}
+          cancelLabel="Cancelar"
+          onConfirm={handleConfirmAction}
+          onCancel={handleCancelAction}
+        />
       </div>
     </main>
   );

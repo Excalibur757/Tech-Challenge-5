@@ -8,6 +8,7 @@ import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
 import Botao from "@/utils/botao";
 import Alarme from "@/utils/alarme";
+import Modal from "@/utils/modal";
 
 type ProfileData = {
   name: string;
@@ -34,6 +35,8 @@ export default function PerfilPage() {
   const [saveMessageText, setSaveMessageText] = useState("Perfil atualizado com sucesso!");
   const [wantChangePassword, setWantChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
+  const [pendingAction, setPendingAction] = useState<"save" | "reset" | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [savedPassword, setSavedPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -66,7 +69,7 @@ export default function PerfilPage() {
     setShowSavedMessage(false);
   }
 
-  function handleSave() {
+  function performSave() {
     const hasProfileChanges =
       profileData.name !== initialValues.name ||
       profileData.age !== initialValues.age ||
@@ -130,7 +133,12 @@ export default function PerfilPage() {
     }, 2200);
   }
 
-  function handleReset() {
+  function attemptSave() {
+    setPendingAction("save");
+    setShowConfirmModal(true);
+  }
+
+  function performReset() {
     const hasResettableChanges =
       !isSaved ||
       wantChangePassword ||
@@ -141,6 +149,10 @@ export default function PerfilPage() {
       setSaveMessageType("warning");
       setSaveMessageText("Não há alterações para serem restauradas");
       setShowSavedMessage(true);
+
+      window.setTimeout(() => {
+        setShowSavedMessage(false);
+      }, 2200);
       return;
     }
 
@@ -156,6 +168,26 @@ export default function PerfilPage() {
     window.setTimeout(() => {
       setShowSavedMessage(false);
     }, 2200);
+  }
+
+  function attemptReset() {
+    setPendingAction("reset");
+    setShowConfirmModal(true);
+  }
+
+  function handleConfirmAction() {
+    setShowConfirmModal(false);
+    if (pendingAction === "save") {
+      performSave();
+    } else if (pendingAction === "reset") {
+      performReset();
+    }
+    setPendingAction(null);
+  }
+
+  function handleCancelAction() {
+    setShowConfirmModal(false);
+    setPendingAction(null);
   }
 
   return (
@@ -200,8 +232,21 @@ export default function PerfilPage() {
           passwordError={passwordError}
           savedPassword={savedPassword}
         />
-        <ActionButtons onSave={handleSave} onReset={handleReset} />
+        <ActionButtons onSave={attemptSave} onReset={attemptReset} />
         <StatusBar isSaved={isSaved} isEdited={!isSaved} />
+        <Modal
+          visible={showConfirmModal}
+          title={pendingAction === "save" ? "Confirmar salvamento" : "Confirmar restauração"}
+          description={
+            pendingAction === "save"
+              ? "Tem certeza de que deseja salvar as alterações no seu perfil?"
+              : "Tem certeza de que deseja restaurar os valores e cancelar as alterações?"
+          }
+          confirmLabel={pendingAction === "save" ? "Sim, salvar" : "Sim, restaurar"}
+          cancelLabel="Cancelar"
+          onConfirm={handleConfirmAction}
+          onCancel={handleCancelAction}
+        />
       </div>
     </main>
   );

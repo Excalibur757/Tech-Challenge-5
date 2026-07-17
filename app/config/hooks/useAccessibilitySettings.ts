@@ -19,10 +19,11 @@ export function useAccessibilitySettings() {
   const [isSaved, setIsSaved] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState<"success" | "error" | "info">("success");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info" | "warning">("success");
 
   useEffect(() => {
     setSettings(loadSettings());
+    setIsSaved(true);
     setIsLoading(false);
   }, []);
 
@@ -36,7 +37,22 @@ export function useAccessibilitySettings() {
     setShowSavedMessage(false);
   };
 
+  const showWarning = (message: string) => {
+    setAlertType("warning");
+    setAlertMessage(message);
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  };
+
   const handleSaveSettings = () => {
+    if (isSaved) {
+      showWarning("Não há alterações para serem salvas");
+      return;
+    }
+
     const success = saveSettings(settings);
 
     if (!success) {
@@ -61,7 +77,14 @@ export function useAccessibilitySettings() {
 
     setSettings(DEFAULT_SETTINGS);
     setIsSaved(false);
-    };
+    setAlertType("success");
+    setAlertMessage("Configurações restauradas com sucesso!");
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  };
 
   const handleFontSizeChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -157,6 +180,7 @@ export function useAccessibilitySettings() {
     handleSaveSettings,
     resetToDefaults,
     hideAlert,
+    showWarning,
 
     handleFontSizeChange,
     handleLineHeightChange,

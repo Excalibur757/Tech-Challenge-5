@@ -66,54 +66,10 @@ export default function ExperienceSettings({
         </div>
       </div>
 
-      {/* Modo de Navegação */}
-      <div className="space-y-3">
-        <label className="font-medium text-gray-700 dark:text-gray-300 block">
-          Modo de Navegação
-        </label>
-
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            {
-              value: "basic",
-              label: "Básico",
-              description: "Interface simplificada",
-            },
-            {
-              value: "advanced",
-              label: "Avançado",
-              description: "Recursos completos",
-            },
-          ].map((option) => (
-            <button
-              key={option.value}
-              onClick={() =>
-                handleNavigationModeChange(
-                  option.value as Settings["navigationMode"]
-                )
-              }
-              className={`p-4 rounded-lg border-2 transition-all text-left ${
-                settings.navigationMode === option.value
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
-                  : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
-              }`}
-            >
-              <div className="font-medium text-gray-800 dark:text-gray-200">
-                {option.label}
-              </div>
-
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {option.description}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Confirmação Extra */}
       <div className="space-y-3">
         <label className="font-medium text-gray-700 dark:text-gray-300 block">
-          Necessidade de Confirmação Extra
+          Necessidade de Confirmação Extra Em Sua Lista de Tarefas?
         </label>
 
         <div className="flex gap-4">

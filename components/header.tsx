@@ -75,6 +75,17 @@ export default function Header() {
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
+                  router.push("/");
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+              >
+                <span aria-hidden="true">🏠</span>
+                <span>Tela Inicial</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
                   router.push("/config");
                 }}
                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"

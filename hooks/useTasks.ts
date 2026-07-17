@@ -1,10 +1,10 @@
-// app/hooks/useTasks.ts
+// hooks/useTasks.ts
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
 
-export interface Task {
+interface Task {
   id: string;
   text: string;
   completed: boolean;
@@ -27,6 +27,18 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const [newSubtask, setNewSubtask] = useState("");
   const [showNotes, setShowNotes] = useState<string | null>(null);
   const [editingPriority, setEditingPriority] = useState<string | null>(null);
+
+  // Estados para o Alarme
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info" | "warning">("success");
+
+  // Estados para o Modal
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState<"delete" | "complete" | "clear" | "edit" | "deleteSubtask" | null>(null);
+  const [modalTaskId, setModalTaskId] = useState<string | null>(null);
+  const [modalTaskName, setModalTaskName] = useState("");
+  const [modalSubtaskId, setModalSubtaskId] = useState<string | null>(null); // Para subtarefas
 
   // Carregar tarefas dos cookies
   useEffect(() => {
@@ -53,10 +65,48 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     }
   }, [tasks, isLoading]);
 
+  // Função para mostrar alertas
+  const showAlertMessage = useCallback((message: string, type: "success" | "error" | "info" | "warning" = "success") => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setShowAlert(true);
+  }, []);
+
+  // Função para fechar alerta
+  const closeAlert = useCallback(() => {
+    setShowAlert(false);
+  }, []);
+
+  // Função para abrir modal de confirmação
+  const openModal = useCallback((
+    action: "delete" | "complete" | "clear" | "edit" | "deleteSubtask", 
+    taskId: string | null, 
+    taskName: string,
+    subtaskId?: string | null
+  ) => {
+    setModalAction(action);
+    setModalTaskId(taskId);
+    setModalTaskName(taskName);
+    setModalSubtaskId(subtaskId || null);
+    setShowModal(true);
+  }, []);
+
+  // Função para fechar modal
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    setModalAction(null);
+    setModalTaskId(null);
+    setModalTaskName("");
+    setModalSubtaskId(null);
+  }, []);
+
   const shouldConfirm = () => extraConfirmation === true;
 
   const addTask = () => {
-    if (newTask.trim() === "") return;
+    if (newTask.trim() === "") {
+      showAlertMessage("Por favor, digite uma tarefa antes de adicionar.", "warning");
+      return;
+    }
     
     const task: Task = {
       id: Date.now().toString(),
@@ -70,18 +120,28 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     setTasks([task, ...tasks]);
     setNewTask("");
     setNewTaskPriority("media");
+    showAlertMessage("Tarefa adicionada com sucesso!", "success");
   };
 
   const deleteTask = (id: string) => {
-    const taskName = tasks.find(t => t.id === id)?.text || "esta tarefa";
-    
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
     if (shouldConfirm()) {
-      if (confirm(`Tem certeza que deseja excluir "${taskName}"?`)) {
-        setTasks(tasks.filter(task => task.id !== id));
-      }
+      openModal("delete", id, task.text);
     } else {
       setTasks(tasks.filter(task => task.id !== id));
+      showAlertMessage(`Tarefa "${task.text}" excluída com sucesso!`, "success");
     }
+  };
+
+  const confirmDelete = () => {
+    if (modalTaskId) {
+      const taskName = tasks.find(t => t.id === modalTaskId)?.text || "tarefa";
+      setTasks(tasks.filter(task => task.id !== modalTaskId));
+      showAlertMessage(`Tarefa "${taskName}" excluída com sucesso!`, "success");
+    }
+    closeModal();
   };
 
   const toggleTask = (id: string) => {
@@ -91,28 +151,42 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       setTasks(tasks.map(t =>
         t.id === id ? { ...t, completed: newStatus } : t
       ));
+      showAlertMessage(
+        newStatus ? `Tarefa "${task.text}" concluída! 🎉` : `Tarefa "${task.text}" reaberta!`,
+        newStatus ? "success" : "info"
+      );
     }
   };
 
   const startEdit = (id: string, text: string) => {
     if (shouldConfirm()) {
-      if (confirm(`Deseja editar a tarefa "${text}"?`)) {
-        setEditingId(id);
-        setEditText(text);
-      }
+      openModal("edit", id, text);
     } else {
       setEditingId(id);
       setEditText(text);
     }
   };
 
+  const confirmEdit = () => {
+    if (modalTaskId) {
+      setEditingId(modalTaskId);
+      setEditText(modalTaskName);
+    }
+    closeModal();
+  };
+
   const saveEdit = (id: string) => {
-    if (editText.trim() === "") return;
+    if (editText.trim() === "") {
+      showAlertMessage("O texto da tarefa não pode estar vazio.", "warning");
+      return;
+    }
+    const task = tasks.find(t => t.id === id);
     setTasks(tasks.map(task =>
       task.id === id ? { ...task, text: editText.trim() } : task
     ));
     setEditingId(null);
     setEditText("");
+    showAlertMessage(`Tarefa "${task?.text}" atualizada!`, "success");
   };
 
   const cancelEdit = () => {
@@ -125,10 +199,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       task.id === id ? { ...task, priority } : task
     ));
     setEditingPriority(null);
+    showAlertMessage(`Prioridade alterada para ${priority}!`, "info");
   };
 
   const addSubtask = (taskId: string) => {
-    if (newSubtask.trim() === "") return;
+    if (newSubtask.trim() === "") {
+      showAlertMessage("Digite o texto da subtarefa.", "warning");
+      return;
+    }
     setTasks(tasks.map(task =>
       task.id === taskId ? {
         ...task,
@@ -139,6 +217,7 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       } : task
     ));
     setNewSubtask("");
+    showAlertMessage("Subtarefa adicionada!", "success");
   };
 
   const toggleSubtask = (taskId: string, subtaskId: string) => {
@@ -152,57 +231,91 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     ));
   };
 
+  // Função para deletar subtarefa (atualizada)
   const deleteSubtask = (taskId: string, subtaskId: string) => {
-    const subtask = tasks
-      .find(t => t.id === taskId)
-      ?.subtasks?.find(st => st.id === subtaskId);
+    const task = tasks.find(t => t.id === taskId);
+    const subtask = task?.subtasks?.find(st => st.id === subtaskId);
     
-    if (subtask) {
+    if (subtask && task) {
       if (shouldConfirm()) {
-        if (confirm(`Tem certeza que deseja excluir a subtarefa "${subtask.text}"?`)) {
-          setTasks(tasks.map(task =>
-            task.id === taskId ? {
-              ...task,
-              subtasks: task.subtasks?.filter(st => st.id !== subtaskId)
-            } : task
-          ));
-        }
+        openModal("deleteSubtask", taskId, subtask.text, subtaskId);
       } else {
-        setTasks(tasks.map(task =>
-          task.id === taskId ? {
-            ...task,
-            subtasks: task.subtasks?.filter(st => st.id !== subtaskId)
-          } : task
+        setTasks(tasks.map(t =>
+          t.id === taskId ? {
+            ...t,
+            subtasks: t.subtasks?.filter(st => st.id !== subtaskId)
+          } : t
         ));
+        showAlertMessage(`Subtarefa "${subtask.text}" excluída!`, "success");
       }
     }
   };
 
-  const markAllComplete = () => {
-    if (shouldConfirm()) {
-      if (confirm("Marcar todas as tarefas como concluídas?")) {
-        setTasks(tasks.map(t => ({ ...t, completed: true })));
-      }
-    } else {
-      setTasks(tasks.map(t => ({ ...t, completed: true })));
+  // Confirmar exclusão de subtarefa
+  const confirmDeleteSubtask = () => {
+    if (modalTaskId && modalSubtaskId) {
+      const task = tasks.find(t => t.id === modalTaskId);
+      const subtask = task?.subtasks?.find(st => st.id === modalSubtaskId);
+      
+      setTasks(tasks.map(t =>
+        t.id === modalTaskId ? {
+          ...t,
+          subtasks: t.subtasks?.filter(st => st.id !== modalSubtaskId)
+        } : t
+      ));
+      
+      showAlertMessage(`Subtarefa "${modalTaskName}" excluída!`, "success");
     }
-  };
-
-  const clearCompleted = () => {
-    if (shouldConfirm()) {
-      if (confirm("Remover todas as tarefas concluídas?")) {
-        setTasks(tasks.filter(t => !t.completed));
-      }
-    } else {
-      setTasks(tasks.filter(t => !t.completed));
-    }
+    closeModal();
   };
 
   const updateTaskNotes = (taskId: string, notes: string) => {
-  setTasks(tasks.map(task =>
-    task.id === taskId ? { ...task, notes } : task
-  ));
-};
+    setTasks(tasks.map(task =>
+      task.id === taskId ? { ...task, notes } : task
+    ));
+  };
+
+  const markAllComplete = () => {
+    if (tasks.length === 0) {
+      showAlertMessage("Não há tarefas para concluir.", "warning");
+      return;
+    }
+
+    if (shouldConfirm()) {
+      openModal("complete", null, "todas as tarefas");
+    } else {
+      setTasks(tasks.map(t => ({ ...t, completed: true })));
+      showAlertMessage("Todas as tarefas foram concluídas! 🎉", "success");
+    }
+  };
+
+  const confirmCompleteAll = () => {
+    setTasks(tasks.map(t => ({ ...t, completed: true })));
+    showAlertMessage("Todas as tarefas foram concluídas! 🎉", "success");
+    closeModal();
+  };
+
+  const clearCompleted = () => {
+    const completedTasks = tasks.filter(t => t.completed);
+    if (completedTasks.length === 0) {
+      showAlertMessage("Não há tarefas concluídas para limpar.", "warning");
+      return;
+    }
+
+    if (shouldConfirm()) {
+      openModal("clear", null, `${completedTasks.length} tarefas concluídas`);
+    } else {
+      setTasks(tasks.filter(t => !t.completed));
+      showAlertMessage(`${completedTasks.length} tarefas concluídas foram removidas!`, "success");
+    }
+  };
+
+  const confirmClearCompleted = () => {
+    const count = tasks.filter(t => t.completed).length;
+    setTasks(tasks.filter(t => !t.completed));
+    showAlertMessage(`${count} tarefas concluídas foram removidas!`, "success");
+    closeModal();
+  };
 
   return {
     tasks,
@@ -222,6 +335,16 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     setShowNotes,
     editingPriority,
     setEditingPriority,
+    // Estados do Alarme
+    showAlert,
+    alertMessage,
+    alertType,
+    closeAlert,
+    // Estados do Modal
+    showModal,
+    modalAction,
+    modalTaskName,
+    // Funções
     addTask,
     deleteTask,
     toggleTask,
@@ -235,5 +358,12 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     markAllComplete,
     clearCompleted,
     updateTaskNotes,
+    // Confirmações
+    confirmDelete,
+    confirmEdit,
+    confirmCompleteAll,
+    confirmClearCompleted,
+    confirmDeleteSubtask, // Nova
+    closeModal,
   };
 }

@@ -27,13 +27,13 @@ export function TaskHeader({
             {mode === "simplificado" ? "🔹 Modo Simplificado" : "🔸 Modo Completo"}
           </p>
           <div className="mt-1 text-xs">
-            <span className={`px-2 py-0.5 rounded-full ${
+            {/* <span className={`px-2 py-0.5 rounded-full ${
               extraConfirmation 
                 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
             }`}>
               {extraConfirmation ? '✅ Confirmação ativada' : '❌ Confirmação desativada'}
-            </span>
+            </span> */}
           </div>
         </div>
         

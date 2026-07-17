@@ -18,6 +18,8 @@ export function useAccessibilitySettings() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info">("success");
 
   useEffect(() => {
     setSettings(loadSettings());
@@ -30,15 +32,23 @@ export function useAccessibilitySettings() {
     }
   }, [settings, isLoading]);
 
+  const hideAlert = () => {
+    setShowSavedMessage(false);
+  };
+
   const handleSaveSettings = () => {
     const success = saveSettings(settings);
 
     if (!success) {
-      alert("Erro ao salvar.");
+      setAlertType("error");
+      setAlertMessage("Erro ao salvar.");
+      setShowSavedMessage(true);
       return;
     }
 
     setIsSaved(true);
+    setAlertType("success");
+    setAlertMessage("Configurações salvas com sucesso!");
     setShowSavedMessage(true);
 
     setTimeout(() => {
@@ -46,7 +56,7 @@ export function useAccessibilitySettings() {
     }, 3000);
   };
 
-    const resetToDefaults = () => {
+  const resetToDefaults = () => {
     clearSettings();
 
     setSettings(DEFAULT_SETTINGS);
@@ -140,10 +150,13 @@ export function useAccessibilitySettings() {
     isLoading,
     isSaved,
     showSavedMessage,
+    alertMessage,
+    alertType,
     isDefaultSettings,
 
     handleSaveSettings,
     resetToDefaults,
+    hideAlert,
 
     handleFontSizeChange,
     handleLineHeightChange,

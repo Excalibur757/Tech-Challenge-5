@@ -4,8 +4,8 @@ import Header from "@/components/header";
 import { useAccessibilitySettings } from "./hooks/useAccessibilitySettings";
 import LoadingScreen from "./components/LoadingScreen";
 import ConfigHeader from "./components/ConfigHeader";
-import SavedMessage from "./components/SavedMessage";
 import TextSettings from "./components/TextSettings";
+import Alarme from "@/utils/alarme";
 import ExperienceSettings from "./components/ExperienceSettings";
 import PreviewSection from "./components/PreviewSection";
 import ActionButtons from "./components/ActionButtons";
@@ -20,10 +20,13 @@ export default function Home() {
   isLoading,
   isSaved,
   showSavedMessage,
+  alertMessage,
+  alertType,
   isDefaultSettings,
 
   handleSaveSettings,
   resetToDefaults,
+  hideAlert,
 
   handleFontSizeChange,
   handleLineHeightChange,
@@ -61,8 +64,11 @@ export default function Home() {
           isDefaultSettings={isDefaultSettings}
       />
 
-      <SavedMessage /* Mensagem de configurações salvas */
+      <Alarme
           visible={showSavedMessage}
+          message={alertMessage}
+          type={alertType}
+          onClose={hideAlert}
       />
 
       <TextSettings /* Configurações de texto */

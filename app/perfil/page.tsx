@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import ProfileHeader from "./components/ProfileHeader";
-import SavedMessage from "./components/SavedMessage";
 import ProfileForm from "./components/ProfileForm";
 import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
 import Botao from "@/utils/botao";
+import Alarme from "@/utils/alarme";
 
 type ProfileData = {
   name: string;
@@ -30,6 +30,8 @@ export default function PerfilPage() {
   const [initialValues, setInitialValues] = useState<ProfileData>(initialProfile);
   const [isSaved, setIsSaved] = useState(true);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
+  const [saveMessageType, setSaveMessageType] = useState<"success" | "error" | "info" | "warning">("success");
+  const [saveMessageText, setSaveMessageText] = useState("Perfil atualizado com sucesso!");
   const [wantChangePassword, setWantChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [savedPassword, setSavedPassword] = useState("");
@@ -65,6 +67,19 @@ export default function PerfilPage() {
   }
 
   function handleSave() {
+    const hasProfileChanges =
+      profileData.name !== initialValues.name ||
+      profileData.age !== initialValues.age ||
+      profileData.email !== initialValues.email ||
+      profileData.phone !== initialValues.phone;
+
+    if (!hasProfileChanges && !wantChangePassword) {
+      setSaveMessageType("warning");
+      setSaveMessageText("Não há alterações para serem salvas");
+      setShowSavedMessage(true);
+      return;
+    }
+
     if (wantChangePassword) {
       if (!currentPassword.trim()) {
         setPasswordError("Informe a senha atual para alterar a senha.");
@@ -106,6 +121,8 @@ export default function PerfilPage() {
     setProfileData((prev) => ({ ...prev, password: "" }));
     setCurrentPassword("");
     setIsSaved(true);
+    setSaveMessageType("success");
+    setSaveMessageText("Perfil atualizado com sucesso!");
     setShowSavedMessage(true);
 
     window.setTimeout(() => {
@@ -114,12 +131,31 @@ export default function PerfilPage() {
   }
 
   function handleReset() {
+    const hasResettableChanges =
+      !isSaved ||
+      wantChangePassword ||
+      currentPassword.trim().length > 0 ||
+      profileData.password.trim().length > 0;
+
+    if (!hasResettableChanges) {
+      setSaveMessageType("warning");
+      setSaveMessageText("Não há alterações para serem restauradas");
+      setShowSavedMessage(true);
+      return;
+    }
+
     setProfileData({ ...initialValues, password: "" });
     setCurrentPassword("");
     setWantChangePassword(false);
     setPasswordError("");
     setIsSaved(true);
-    setShowSavedMessage(false);
+    setSaveMessageType("success");
+    setSaveMessageText("Alterações restauradas com sucesso!");
+    setShowSavedMessage(true);
+
+    window.setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 2200);
   }
 
   return (
@@ -148,7 +184,12 @@ export default function PerfilPage() {
         </div>
 
         <ProfileHeader isSaved={isSaved} isEdited={!isSaved} />
-        <SavedMessage visible={showSavedMessage} />
+        <Alarme
+          visible={showSavedMessage}
+          message={saveMessageText}
+          type={saveMessageType}
+          onClose={() => setShowSavedMessage(false)}
+        />
         <ProfileForm
           profileData={profileData}
           onFieldChange={handleFieldChange}

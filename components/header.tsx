@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { NotificationBell } from "./notification/NotificationBell";
 
 export default function Header() {
   const [user, setUser] = useState<string | null>(null);
@@ -57,6 +58,8 @@ export default function Header() {
           SeniorEase
         </button>
 
+        <NotificationBell />
+
         <div className="relative" ref={menuRef}>
           <button
             type="button"
@@ -67,7 +70,7 @@ export default function Header() {
               {user ? user.charAt(0).toUpperCase() : "?"}
             </div>
             <span className="text-sm">{user ?? "Usuário"}</span>
-          </button>
+          </button>          
 
           {menuOpen && (
             <div className="absolute right-0 z-10 mt-2 w-48 rounded-md border border-slate-700 bg-slate-800 py-1 shadow-lg">

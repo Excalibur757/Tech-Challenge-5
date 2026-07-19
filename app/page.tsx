@@ -2,15 +2,13 @@
 "use client";
 
 import Header from "@/components/header";
-import Botao from "@/utils/botao";
-import Alarme from "@/utils/alarme";
-import Modal from "@/utils/modal";
 import { TaskHeader } from "@/components/tasks/TaskHeader";
 import { TaskStats } from "@/components/tasks/TaskStats";
 import { TaskInput } from "@/components/tasks/TaskInput";
 import { TaskList } from "@/components/tasks/TaskList";
 import { AccessibilityTip } from "@/components/ui/AccessibilityTip";
 import { QuickActions } from "@/components/tasks/QuickActions";
+import { TaskFeedback } from "@/components/tasks/TaskFeedback";
 import { useTasks } from "@/hooks/useTasks";
 import { useTaskFilters } from "@/hooks/useTaskFilters";
 import { useTaskStats } from "@/hooks/useTaskStats";
@@ -26,7 +24,6 @@ export default function Home() {
 
   const {
     tasks,
-    setTasks,
     newTask,
     setNewTask,
     newTaskPriority,
@@ -99,95 +96,25 @@ export default function Home() {
     );
   }
 
-  // Configurar título e descrição do modal baseado na ação
-  const getModalConfig = () => {
-    switch (modalAction) {
-      case "delete":
-        return {
-          title: "Confirmar exclusão",
-          description: `Tem certeza que deseja excluir a tarefa "${modalTaskName}"?`,
-          confirmLabel: "Sim, excluir",
-        };
-      case "deleteSubtask":
-        return {
-          title: "Confirmar exclusão",
-          description: `Tem certeza que deseja excluir a subtarefa "${modalTaskName}"?`,
-          confirmLabel: "Sim, excluir",
-        };
-      case "edit":
-        return {
-          title: "Confirmar edição",
-          description: `Deseja editar a tarefa "${modalTaskName}"?`,
-          confirmLabel: "Sim, editar",
-        };
-      case "complete":
-        return {
-          title: "Confirmar ação",
-          description: "Tem certeza que deseja marcar todas as tarefas como concluídas?",
-          confirmLabel: "Sim, concluir todas",
-        };
-      case "clear":
-        return {
-          title: "Confirmar limpeza",
-          description: `Tem certeza que deseja remover todas as tarefas concluídas? (${modalTaskName})`,
-          confirmLabel: "Sim, remover",
-        };
-      default:
-        return {
-          title: "Confirmar",
-          description: "Tem certeza que deseja realizar esta ação?",
-          confirmLabel: "Confirmar",
-        };
-    }
-  };
-
-  const modalConfig = getModalConfig();
-
-  // Função para lidar com a confirmação do modal
-  const handleModalConfirm = () => {
-    switch (modalAction) {
-      case "delete":
-        confirmDelete();
-        break;
-      case "deleteSubtask":
-        confirmDeleteSubtask();
-        break;
-      case "edit":
-        confirmEdit();
-        break;
-      case "complete":
-        confirmCompleteAll();
-        break;
-      case "clear":
-        confirmClearCompleted();
-        break;
-      default:
-        closeModal();
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      {/* Alarme Global */}
-      <Alarme
-        visible={showAlert}
-        message={alertMessage}
-        type={alertType}
-        onClose={closeAlert}
-        autoHideMs={4000}
-      />
-
-      {/* Modal Global */}
-      <Modal
-        visible={showModal}
-        title={modalConfig.title}
-        description={modalConfig.description}
-        confirmLabel={modalConfig.confirmLabel}
-        cancelLabel="Cancelar"
-        onConfirm={handleModalConfirm}
-        onCancel={closeModal}
+      {/* Feedback Global (Alarme + Modal) */}
+      <TaskFeedback
+        showAlert={showAlert}
+        alertMessage={alertMessage}
+        alertType={alertType}
+        closeAlert={closeAlert}
+        showModal={showModal}
+        modalAction={modalAction}
+        modalTaskName={modalTaskName}
+        closeModal={closeModal}
+        confirmDelete={confirmDelete}
+        confirmDeleteSubtask={confirmDeleteSubtask}
+        confirmEdit={confirmEdit}
+        confirmCompleteAll={confirmCompleteAll}
+        confirmClearCompleted={confirmClearCompleted}
       />
 
       <main className="flex-1 max-w-4xl mx-auto w-full p-6 space-y-6">

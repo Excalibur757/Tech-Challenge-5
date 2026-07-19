@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
+import { notificationService } from '@/services/notification.service';
 
 interface Task {
   id: string;
@@ -102,26 +103,26 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
 
   const shouldConfirm = () => extraConfirmation === true;
 
-  const addTask = () => {
-    if (newTask.trim() === "") {
-      showAlertMessage("Por favor, digite uma tarefa antes de adicionar.", "warning");
-      return;
-    }
+  // const addTask = () => {
+  //   if (newTask.trim() === "") {
+  //     showAlertMessage("Por favor, digite uma tarefa antes de adicionar.", "warning");
+  //     return;
+  //   }
     
-    const task: Task = {
-      id: Date.now().toString(),
-      text: newTask.trim(),
-      completed: false,
-      createdAt: new Date(),
-      priority: newTaskPriority,
-      subtasks: [],
-    };
+  //   const task: Task = {
+  //     id: Date.now().toString(),
+  //     text: newTask.trim(),
+  //     completed: false,
+  //     createdAt: new Date(),
+  //     priority: newTaskPriority,
+  //     subtasks: [],
+  //   };
     
-    setTasks([task, ...tasks]);
-    setNewTask("");
-    setNewTaskPriority("media");
-    showAlertMessage("Tarefa adicionada com sucesso!", "success");
-  };
+  //   setTasks([task, ...tasks]);
+  //   setNewTask("");
+  //   setNewTaskPriority("media");
+  //   showAlertMessage("Tarefa adicionada com sucesso!", "success");
+  // };
 
   const deleteTask = (id: string) => {
     const task = tasks.find(t => t.id === id);
@@ -144,19 +145,19 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     closeModal();
   };
 
-  const toggleTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-      const newStatus = !task.completed;
-      setTasks(tasks.map(t =>
-        t.id === id ? { ...t, completed: newStatus } : t
-      ));
-      showAlertMessage(
-        newStatus ? `Tarefa "${task.text}" concluída! 🎉` : `Tarefa "${task.text}" reaberta!`,
-        newStatus ? "success" : "info"
-      );
-    }
-  };
+  // const toggleTask = (id: string) => {
+  //   const task = tasks.find(t => t.id === id);
+  //   if (task) {
+  //     const newStatus = !task.completed;
+  //     setTasks(tasks.map(t =>
+  //       t.id === id ? { ...t, completed: newStatus } : t
+  //     ));
+  //     showAlertMessage(
+  //       newStatus ? `Tarefa "${task.text}" concluída! 🎉` : `Tarefa "${task.text}" reaberta!`,
+  //       newStatus ? "success" : "info"
+  //     );
+  //   }
+  // };
 
   const startEdit = (id: string, text: string) => {
     if (shouldConfirm()) {
@@ -309,6 +310,99 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       showAlertMessage(`${completedTasks.length} tarefas concluídas foram removidas!`, "success");
     }
   };
+
+  const addTask = () => {
+    if (newTask.trim() === "") {
+      showAlertMessage("Por favor, digite uma tarefa antes de adicionar.", "warning");
+      return;
+    }
+    
+    const task: Task = {
+      id: Date.now().toString(),
+      text: newTask.trim(),
+      completed: false,
+      createdAt: new Date(),
+      priority: newTaskPriority,
+      subtasks: [],
+    };
+    
+    setTasks([task, ...tasks]);
+    setNewTask("");
+    setNewTaskPriority("media");
+    
+    // Notificação
+    notificationService.addNotification(
+      "📝 Nova tarefa",
+      `"${task.text}" foi adicionada`,
+      "notification",
+      task.id
+    );
+    
+    showAlertMessage("Tarefa adicionada com sucesso!", "success");
+  };
+
+  const toggleTask = (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+      const newStatus = !task.completed;
+      setTasks(tasks.map(t =>
+        t.id === id ? { ...t, completed: newStatus } : t
+      ));
+      
+      if (newStatus) {
+        notificationService.addNotification(
+          "🎉 Tarefa concluída!",
+          `"${task.text}" foi concluída`,
+          "notification",
+          task.id
+        );
+        showAlertMessage(`Tarefa "${task.text}" concluída! 🎉`, "success");
+      } else {
+        notificationService.addNotification(
+          "🔄 Tarefa reaberta",
+          `"${task.text}" foi reaberta`,
+          "notification",
+          task.id
+        );
+        showAlertMessage(`Tarefa "${task.text}" reaberta!`, "info");
+      }
+    }
+  };
+
+  // Verificar lembretes de tarefas com data
+  useEffect(() => {
+    if (tasks.length === 0) return;
+    
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    tasks.forEach(task => {
+      if (!task.completed && task.dueDate) {
+        const dueDate = new Date(task.dueDate);
+        
+        // Se vence amanhã
+        if (dueDate.toDateString() === tomorrow.toDateString()) {
+          notificationService.addNotification(
+            "⏰ Tarefa vence amanhã!",
+            `"${task.text}" precisa ser concluída até amanhã`,
+            "reminder",
+            task.id
+          );
+        }
+        
+        // Se já passou da data
+        if (dueDate < now && !task.completed) {
+          notificationService.addNotification(
+            "⚠️ Tarefa atrasada!",
+            `"${task.text}" está atrasada!`,
+            "reminder",
+            task.id
+          );
+        }
+      }
+    });
+  }, [tasks]);
 
   const confirmClearCompleted = () => {
     const count = tasks.filter(t => t.completed).length;

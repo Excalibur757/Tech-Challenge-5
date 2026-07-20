@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { notificationService } from '@/services/notification.service';
+import Modal from "@/utils/modal";
 
 interface Notification {
   id: string;
@@ -18,6 +19,7 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showClearModal, setShowClearModal] = useState(false);
 
   useEffect(() => {
     // Sincronizar com configurações
@@ -45,9 +47,16 @@ export function NotificationBell() {
   };
 
   const handleClearAll = () => {
-    if (confirm('Tem certeza que deseja limpar todas as notificações?')) {
-      notificationService.clearAll();
-    }
+    setShowClearModal(true);
+  };
+
+  const confirmClearAll = () => {
+    notificationService.clearAll();
+    setShowClearModal(false);
+  };
+
+  const cancelClearAll = () => {
+    setShowClearModal(false);
   };
 
   const formatTime = (date: Date) => {
@@ -157,6 +166,15 @@ export function NotificationBell() {
           </div>
         </>
       )}
+      <Modal
+      visible={showClearModal}
+      title="Limpar Notificações"
+      description="Tem certeza que deseja remover todas as notificações? Esta ação não pode ser desfeita."
+      confirmLabel="Sim, limpar tudo"
+      cancelLabel="Cancelar"
+      onConfirm={confirmClearAll}
+      onCancel={cancelClearAll}
+    />
     </div>
   );
 }

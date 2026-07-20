@@ -1,0 +1,43 @@
+name: CI
+
+# Quando executar
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Baixa o código do repositório
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # Instala o Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Instala todas as dependências
+      - name: Instalar dependências
+        run: npm ci
+
+      # Verifica problemas de código (ESLint)
+      - name: Rodar Lint
+        run: npm run lint
+
+      # Verifica se o projeto consegue ser compilado
+      - name: Build da aplicação
+        run: npm run build
+
+      # (Opcional)
+      # Quando vocês criarem testes automatizados,
+      # basta descomentar as linhas abaixo.
+
+      # - name: Rodar testes
+      #   run: npm test

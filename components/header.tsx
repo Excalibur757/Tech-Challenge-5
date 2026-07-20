@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "./notification/NotificationBell";
+import { HistoryPanel } from "./history/HistoryPanel";
 
 export default function Header() {
   const [user, setUser] = useState<string | null>(null);
@@ -57,7 +58,8 @@ export default function Header() {
         >
           SeniorEase
         </button>
-
+        
+        <HistoryPanel />
         <NotificationBell />
 
         <div className="relative" ref={menuRef}>

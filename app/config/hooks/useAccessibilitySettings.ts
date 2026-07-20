@@ -1,10 +1,9 @@
+// app/hooks/useAccessibilitySettings.ts
 "use client";
 
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
 import { DEFAULT_SETTINGS } from "../../../constants/defaultSettings";
 import type { Settings } from "../../../types/settings";
-
 import {
   applySettings,
   clearSettings,
@@ -12,32 +11,80 @@ import {
   saveSettings,
 } from "../../../services/accessibility.service";
 
-export function useAccessibilitySettings() {
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+interface UseAccessibilitySettingsReturn {
+  // Estados
+  settings: Settings;
+  isLoading: boolean;
+  isSaved: boolean;
+  showSavedMessage: boolean;
+  alertMessage: string;
+  alertType: "success" | "error" | "info" | "warning";
+  isDefaultSettings: boolean;
+  showConfirmModal: boolean;
+  pendingAction: "save" | "reset" | null;
 
+  // Ações
+  handleSaveSettings: () => void;
+  resetToDefaults: () => void;
+  hideAlert: () => void;
+  showWarning: (message: string) => void;
+  
+  // Handlers de mudança
+  handleFontSizeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleLineHeightChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleLetterSpacingChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleContrastChange: (value: Settings["contrastLevel"]) => void;
+  handleNavigationModeChange: (value: Settings["navigationMode"]) => void;
+  handleExtraConfirmationChange: (value: boolean) => void;
+  handleNotificationPreferenceChange: (value: Settings["notificationPreference"]) => void;
+
+  // Ações do modal
+  attemptSave: () => void;
+  attemptReset: () => void;
+  handleConfirmAction: () => void;
+  handleCancelAction: () => void;
+  
+  // Ações de navegação
+  goToHome: () => void;
+}
+
+export function useAccessibilitySettings(): UseAccessibilitySettingsReturn {
+  // Estados principais
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"success" | "error" | "info" | "warning">("success");
+  
+  // Estados do modal
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"save" | "reset" | null>(null);
 
+  // Carregar configurações
   useEffect(() => {
-    setSettings(loadSettings());
+    const loadedSettings = loadSettings();
+    setSettings(loadedSettings);
     setIsSaved(true);
     setIsLoading(false);
   }, []);
 
+  // Aplicar configurações ao DOM
   useEffect(() => {
     if (!isLoading) {
       applySettings(settings);
     }
   }, [settings, isLoading]);
 
-  const hideAlert = () => {
-    setShowSavedMessage(false);
-  };
+  // Verificar se está nas configurações padrão
+  const isDefaultSettings = JSON.stringify(settings) === JSON.stringify(DEFAULT_SETTINGS);
 
-  const showWarning = (message: string) => {
+  // Funções de utilidade
+  const hideAlert = useCallback(() => {
+    setShowSavedMessage(false);
+  }, []);
+
+  const showWarning = useCallback((message: string) => {
     setAlertType("warning");
     setAlertMessage(message);
     setShowSavedMessage(true);
@@ -45,9 +92,87 @@ export function useAccessibilitySettings() {
     setTimeout(() => {
       setShowSavedMessage(false);
     }, 3000);
-  };
+  }, []);
 
-  const handleSaveSettings = () => {
+  const showSuccess = useCallback((message: string) => {
+    setAlertType("success");
+    setAlertMessage(message);
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  }, []);
+
+  const showError = useCallback((message: string) => {
+    setAlertType("error");
+    setAlertMessage(message);
+    setShowSavedMessage(true);
+
+    setTimeout(() => {
+      setShowSavedMessage(false);
+    }, 3000);
+  }, []);
+
+  // Handlers de mudança
+  const handleFontSizeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings((prev) => ({
+      ...prev,
+      fontSize: Number(e.target.value),
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleLineHeightChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings((prev) => ({
+      ...prev,
+      lineHeight: Number(e.target.value),
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleLetterSpacingChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings((prev) => ({
+      ...prev,
+      letterSpacing: Number(e.target.value),
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleContrastChange = useCallback((value: Settings["contrastLevel"]) => {
+    setSettings((prev) => ({
+      ...prev,
+      contrastLevel: value,
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleNavigationModeChange = useCallback((value: Settings["navigationMode"]) => {
+    setSettings((prev) => ({
+      ...prev,
+      navigationMode: value,
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleExtraConfirmationChange = useCallback((value: boolean) => {
+    setSettings((prev) => ({
+      ...prev,
+      extraConfirmation: value,
+    }));
+    setIsSaved(false);
+  }, []);
+
+  const handleNotificationPreferenceChange = useCallback((value: Settings["notificationPreference"]) => {
+    setSettings((prev) => ({
+      ...prev,
+      notificationPreference: value,
+    }));
+    setIsSaved(false);
+  }, []);
+
+  // Ações principais
+  const handleSaveSettings = useCallback(() => {
     if (isSaved) {
       showWarning("Não há alterações para serem salvas");
       return;
@@ -56,139 +181,94 @@ export function useAccessibilitySettings() {
     const success = saveSettings(settings);
 
     if (!success) {
-      setAlertType("error");
-      setAlertMessage("Erro ao salvar.");
-      setShowSavedMessage(true);
+      showError("Erro ao salvar as configurações.");
       return;
     }
 
     setIsSaved(true);
-    setAlertType("success");
-    setAlertMessage("Configurações salvas com sucesso!");
-    setShowSavedMessage(true);
+    showSuccess("Configurações salvas com sucesso!");
+  }, [settings, isSaved, showWarning, showError, showSuccess]);
 
-    setTimeout(() => {
-      setShowSavedMessage(false);
-    }, 3000);
-  };
-
-  const resetToDefaults = () => {
+  const resetToDefaults = useCallback(() => {
     clearSettings();
-
     setSettings(DEFAULT_SETTINGS);
     setIsSaved(false);
-    setAlertType("success");
-    setAlertMessage("Configurações restauradas com sucesso!");
-    setShowSavedMessage(true);
+    showSuccess("Configurações restauradas com sucesso!");
+  }, [showSuccess]);
 
-    setTimeout(() => {
-      setShowSavedMessage(false);
-    }, 3000);
-  };
+  // Ações do modal
+  const attemptSave = useCallback(() => {
+    setPendingAction("save");
+    setShowConfirmModal(true);
+  }, []);
 
-  const handleFontSizeChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      fontSize: Number(e.target.value),
-    }));
+  const attemptReset = useCallback(() => {
+    if (isSaved && isDefaultSettings) {
+      showWarning("Não há alterações para serem restauradas");
+      return;
+    }
+    setPendingAction("reset");
+    setShowConfirmModal(true);
+  }, [isSaved, isDefaultSettings, showWarning]);
 
-    setIsSaved(false);
-  };
+  const handleConfirmAction = useCallback(() => {
+    setShowConfirmModal(false);
 
-  const handleLineHeightChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      lineHeight: Number(e.target.value),
-    }));
+    if (pendingAction === "save") {
+      handleSaveSettings();
+    } else if (pendingAction === "reset") {
+      resetToDefaults();
+    }
 
-    setIsSaved(false);
-  };
+    setPendingAction(null);
+  }, [pendingAction, handleSaveSettings, resetToDefaults]);
 
-  const handleLetterSpacingChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      letterSpacing: Number(e.target.value),
-    }));
+  const handleCancelAction = useCallback(() => {
+    setShowConfirmModal(false);
+    setPendingAction(null);
+  }, []);
 
-    setIsSaved(false);
-  };
-
-  const handleContrastChange = (
-    value: Settings["contrastLevel"]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      contrastLevel: value,
-    }));
-
-    setIsSaved(false);
-  };
-
-  const handleNavigationModeChange = (
-    value: Settings["navigationMode"]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      navigationMode: value,
-    }));
-
-    setIsSaved(false);
-  };
-
-  const handleExtraConfirmationChange = (
-    value: boolean
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      extraConfirmation: value,
-    }));
-
-    setIsSaved(false);
-  };
-
-  const handleNotificationPreferenceChange = (
-    value: Settings["notificationPreference"]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      notificationPreference: value,
-    }));
-
-    setIsSaved(false);
-  };
-
-  const isDefaultSettings =
-    JSON.stringify(settings) ===
-    JSON.stringify(DEFAULT_SETTINGS);
+  // Navegação
+  const goToHome = useCallback(() => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
+  }, []);
 
   return {
+    // Estados
     settings,
-
     isLoading,
     isSaved,
     showSavedMessage,
     alertMessage,
     alertType,
     isDefaultSettings,
+    showConfirmModal,
+    pendingAction,
 
+    // Ações principais
     handleSaveSettings,
     resetToDefaults,
     hideAlert,
     showWarning,
 
+    // Handlers de mudança
     handleFontSizeChange,
     handleLineHeightChange,
     handleLetterSpacingChange,
-
     handleContrastChange,
     handleNavigationModeChange,
     handleExtraConfirmationChange,
     handleNotificationPreferenceChange,
+
+    // Ações do modal
+    attemptSave,
+    attemptReset,
+    handleConfirmAction,
+    handleCancelAction,
+
+    // Navegação
+    goToHome,
   };
 }

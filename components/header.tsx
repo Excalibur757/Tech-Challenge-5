@@ -20,13 +20,18 @@ export default function Header() {
 
   // components/header.tsx
   useEffect(() => {
+    const syncUserName = () => {
+      const name = localStorage.getItem("authName") || localStorage.getItem("authUser") || "";
+      setUser(name);
+    };
+
     syncUserName();
 
     const handleStorage = () => syncUserName();
     window.addEventListener("storage", handleStorage);
     
     return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  }, []); // <-- ADICIONAR DEPENDÊNCIA VAZIA E MOVER syncUserName PARA DENTRO
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

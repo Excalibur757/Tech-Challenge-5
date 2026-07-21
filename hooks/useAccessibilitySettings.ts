@@ -10,22 +10,26 @@ export function useAccessibilitySettings() {
   const [mode, setMode] = useState<"simplificado" | "completo">("simplificado");
   /* eslint-disable no-console */
   useEffect(() => {
-    try {
-      const savedSettings = Cookies.get("accessibilitySettings");
-      if (savedSettings) {
-        const parsed = JSON.parse(savedSettings);
-        setExtraConfirmation(parsed.extraConfirmation || false);
+    const loadSettings = () => {
+      try {
+        const savedSettings = Cookies.get("accessibilitySettings");
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings);
+          setExtraConfirmation(parsed.extraConfirmation || false);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar configurações:", error);
       }
-    } catch (error) {
-      console.error("Erro ao carregar configurações:", error);
-    }
 
-    const savedMode = Cookies.get("todoMode");
-    if (savedMode === "simplificado" || savedMode === "completo") {
-      setMode(savedMode);
-    }
+      const savedMode = Cookies.get("todoMode");
+      if (savedMode === "simplificado" || savedMode === "completo") {
+        setMode(savedMode);
+      }
 
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    loadSettings();
   }, []);
 
   useEffect(() => {

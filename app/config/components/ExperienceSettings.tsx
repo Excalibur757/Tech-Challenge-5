@@ -23,7 +23,7 @@ interface ExperienceSettingsProps {
 export default function ExperienceSettings({
   settings,
   handleContrastChange,
-  handleNavigationModeChange,
+  // handleNavigationModeChange,
   handleExtraConfirmationChange,
   handleNotificationPreferenceChange,
 }: ExperienceSettingsProps) {

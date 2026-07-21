@@ -17,7 +17,7 @@ import { TutorialOverlay } from "@/components/tutorial/TutorialOverlay";
 import { useState } from "react";
 
 export default function Home() {
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, _setShowTutorial] = useState(true);
 
   const {
     extraConfirmation,
@@ -90,7 +90,7 @@ export default function Home() {
   };
 
   const handleTutorialComplete = () => {
-    setShowTutorial(false);
+    _setShowTutorial(false);
   };
 
   if (isLoading) {

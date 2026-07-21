@@ -53,7 +53,7 @@ interface TaskListProps {
 }
 
 export function TaskList({
-  tasks,
+  //tasks,
   filteredTasks,
   searchTerm,
   filter,

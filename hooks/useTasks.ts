@@ -432,7 +432,7 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const confirmDeleteSubtask = () => {
     if (modalTaskId && modalSubtaskId) {
       const task = tasks.find(t => t.id === modalTaskId);
-      const subtask = task?.subtasks?.find(st => st.id === modalSubtaskId);
+      // const subtask = task?.subtasks?.find(st => st.id === modalSubtaskId);
       
       // 📝 Adicionar ao histórico ANTES de deletar
       historyService.addEntry(

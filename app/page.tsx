@@ -17,7 +17,8 @@ import { TutorialOverlay } from "@/components/tutorial/TutorialOverlay";
 import { useState } from "react";
 
 export default function Home() {
-  const [showTutorial, _setShowTutorial] = useState(true);
+  // eslint-disable-next-line no-unused-vars
+  const [showTutorial, setShowTutorial] = useState(true);
 
   const {
     extraConfirmation,
@@ -90,7 +91,7 @@ export default function Home() {
   };
 
   const handleTutorialComplete = () => {
-    _setShowTutorial(false);
+    setShowTutorial(false);
   };
 
   if (isLoading) {

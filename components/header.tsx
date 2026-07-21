@@ -11,13 +11,6 @@ export default function Header() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  function syncUserName() {
-    if (typeof window === "undefined") return;
-
-    const storedName = localStorage.getItem("authName") || localStorage.getItem("authUser") || null;
-    setUser(storedName);
-  }
-
   // components/header.tsx
   useEffect(() => {
     const syncUserName = () => {
@@ -31,7 +24,7 @@ export default function Header() {
     window.addEventListener("storage", handleStorage);
     
     return () => window.removeEventListener("storage", handleStorage);
-  }, []); // <-- ADICIONAR DEPENDÊNCIA VAZIA E MOVER syncUserName PARA DENTRO
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

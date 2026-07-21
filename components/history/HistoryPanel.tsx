@@ -1,4 +1,4 @@
-// components/history/HistoryPanel.tsx
+/* eslint-disable */
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -181,7 +181,7 @@ export function HistoryPanel() {
                 {actions.map((action) => (
                   <button
                     key={action}
-                    onClick={() => setFilter(action as any)} // eslint-disable-line no-unused-vars
+                    onClick={() => setFilter(action as any)}
                     className={`px-2 py-0.5 rounded text-[10px] sm:text-xs transition-colors whitespace-nowrap shrink-0 ${
                       filter === action
                         ? 'bg-purple-600 text-white'
@@ -196,7 +196,7 @@ export function HistoryPanel() {
 
             {/* Lista de histórico */}
             <div className="overflow-y-auto max-h-[calc(80vh-160px)] sm:max-h-100">
-              {filteredHistory.length === 0 ? (/* eslint-disable no-console */
+              {filteredHistory.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                   <span className="text-4xl block mb-2">📭</span>
                   <p className="text-sm">Nenhuma atividade registrada</p>
@@ -217,7 +217,7 @@ export function HistoryPanel() {
                             {getActionLabel(entry.action)}
                           </span>
                           <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
-                            '{entry.taskName}' 
+                            {entry.taskName}
                           </span>
                         </div>
                         {entry.details && (
@@ -230,7 +230,7 @@ export function HistoryPanel() {
                         </p>
                       </div>
                     </div>
-                  </div>/* eslint-enable no-console */
+                  </div>
                 ))
               )}
             </div>

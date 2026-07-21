@@ -8,7 +8,6 @@ export function useAccessibilitySettings() {
   const [extraConfirmation, setExtraConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [mode, setMode] = useState<"simplificado" | "completo">("simplificado");
-  /* eslint-disable no-console */
   useEffect(() => {
     const loadSettings = () => {
       try {

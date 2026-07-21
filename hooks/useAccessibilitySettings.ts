@@ -8,7 +8,7 @@ export function useAccessibilitySettings() {
   const [extraConfirmation, setExtraConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [mode, setMode] = useState<"simplificado" | "completo">("simplificado");
-
+  /* eslint-disable no-console */
   useEffect(() => {
     try {
       const savedSettings = Cookies.get("accessibilitySettings");
@@ -49,3 +49,4 @@ export function useAccessibilitySettings() {
     toggleMode,
   };
 }
+/* eslint-enable no-console */

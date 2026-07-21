@@ -14,12 +14,15 @@ export function HistoryPanel() {
   // Estado para o Modal de confirmação
   const [showClearModal, setShowClearModal] = useState(false);
 
+  // components/history/HistoryPanel.tsx
   useEffect(() => {
-    // Carregar histórico inicial
-    setHistory(historyService.getHistory());
-    setStats(historyService.getStats());
+    const loadHistory = () => {
+      setHistory(historyService.getHistory());
+      setStats(historyService.getStats());
+    };
 
-    // Inscrever para atualizações
+    loadHistory();
+
     const unsubscribe = historyService.subscribe((newHistory) => {
       setHistory(newHistory);
       setStats(historyService.getStats());

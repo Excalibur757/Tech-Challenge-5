@@ -20,6 +20,11 @@ interface Task {
   tags?: string[];
 }
 
+type TaskData = Omit<Task, 'createdAt' | 'reminder'> & {
+  createdAt: string;
+  reminder?: string | null;
+};
+
 export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
@@ -45,26 +50,29 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
 
   // Carregar tarefas dos cookies
   useEffect(() => {
-    const savedTasks = Cookies.get("tasks");
-    if (savedTasks) {
-      try {
-        const parsed = JSON.parse(savedTasks);
-        const loadedTasks = parsed.map((t: any) => ({
-          ...t,
-          createdAt: new Date(t.createdAt),
-          dueDate: t.dueDate,
-          reminder: t.reminder ? new Date(t.reminder) : undefined
-        }));
-        setTasks(loadedTasks);
-        
-        // Verificar lembretes após carregar (com delay para garantir que tudo está pronto)
-        setTimeout(() => {
-          reminderService.checkReminders(loadedTasks);
-        }, 3000);
-      } catch (error) {
-        console.error("Erro ao carregar tarefas:", error);
+    const loadTasks = () => {
+      const savedTasks = Cookies.get("tasks");
+      if (savedTasks) {
+        try {
+          const parsed = JSON.parse(savedTasks);
+          const loadedTasks = parsed.map((t: TaskData) => ({
+            ...t,
+            createdAt: new Date(t.createdAt),
+            dueDate: t.dueDate,
+            reminder: t.reminder ? new Date(t.reminder) : undefined
+          }));
+          setTasks(loadedTasks);
+          
+          setTimeout(() => {
+            reminderService.checkReminders(loadedTasks);
+          }, 3000);
+        } catch (error) {
+          console.error("Erro ao carregar tarefas:", error);
+        }
       }
-    }
+    };
+
+    loadTasks();
   }, []);
 
   // Salvar tarefas nos cookies

@@ -33,7 +33,7 @@ class HistoryService {
     try {
       const saved = localStorage.getItem("taskHistory");
       if (saved) {
-        this.history = JSON.parse(saved).map((item: any) => ({
+        this.history = JSON.parse(saved).map((item: Omit<HistoryEntry, 'timestamp'> & { timestamp: string }) => ({
           ...item,
           timestamp: new Date(item.timestamp)
         }));

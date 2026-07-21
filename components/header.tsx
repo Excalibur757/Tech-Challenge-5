@@ -18,11 +18,13 @@ export default function Header() {
     setUser(storedName);
   }
 
+  // components/header.tsx
   useEffect(() => {
     syncUserName();
 
     const handleStorage = () => syncUserName();
     window.addEventListener("storage", handleStorage);
+    
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 

@@ -1,9 +1,4 @@
-import { DEFAULT_SETTINGS } from "../../../constants/defaultSettings";
-import { useAccessibilitySettings } from "../hooks/useAccessibilitySettings";
-
 export default function ConfigHeader({ isSaved, isDefaultSettings }: { isSaved: boolean; isDefaultSettings: boolean }) {
-    const { settings } = useAccessibilitySettings();
-
   return (
     <header className="bg-blue-600 text-white p-6 rounded-lg relative">
         <div className="flex justify-between items-start">

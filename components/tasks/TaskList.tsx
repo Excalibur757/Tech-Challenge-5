@@ -4,9 +4,27 @@
 import { TaskItem } from "./TaskItem";
 import { TaskEmptyState } from "./TaskEmptyState";
 
+interface TaskSubtask {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+interface Task {
+  id: string;
+  text: string;
+  completed: boolean;
+  priority?: "baixa" | "media" | "alta";
+  dueDate?: string;
+  tags?: string[];
+  notes?: string;
+  subtasks?: TaskSubtask[];
+  createdAt: Date;
+}
+
 interface TaskListProps {
-  tasks: any[];
-  filteredTasks: any[];
+  tasks: Task[];
+  filteredTasks: Task[];
   searchTerm: string;
   filter: string;
   mode: "simplificado" | "completo";

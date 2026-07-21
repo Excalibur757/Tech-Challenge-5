@@ -65,9 +65,11 @@ export function useProfile(): UseProfileReturn {
   const [isLoading, setIsLoading] = useState(true);
 
   // Carregar perfil
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+// app/perfil/hooks/useProfile.ts
+useEffect(() => {
+  if (typeof window === "undefined") return;
 
+  const loadProfile = () => {
     const storedName = localStorage.getItem("authName") || localStorage.getItem("authUser") || "";
     const storedPassword = localStorage.getItem("authPassword") || localStorage.getItem("profilePassword") || "";
 
@@ -87,7 +89,10 @@ export function useProfile(): UseProfileReturn {
     setPasswordError("");
     setIsSaved(true);
     setIsLoading(false);
-  }, []);
+  };
+
+  loadProfile();
+}, []);
 
   // Função para fechar o alarme
   const closeAlert = useCallback(() => {

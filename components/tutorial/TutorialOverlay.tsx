@@ -90,9 +90,13 @@ export function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   ];
 
   useEffect(() => {
-    const shouldShow = tutorialService.shouldShowTutorial();
-    setIsVisible(shouldShow);
-    setIsLoading(false);
+    const loadTutorial = () => {
+      const shouldShow = tutorialService.shouldShowTutorial();
+      setIsVisible(shouldShow);
+      setIsLoading(false);
+    };
+
+    loadTutorial();
   }, []);
 
   const handleNext = () => {

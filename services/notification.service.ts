@@ -38,7 +38,7 @@ class NotificationService {
     try {
       const saved = localStorage.getItem("notifications");
       if (saved) {
-        this.notifications = JSON.parse(saved).map((n: any) => ({
+        this.notifications = JSON.parse(saved).map((n: Omit<Notification, 'timestamp'> & { timestamp: string }) => ({
           ...n,
           timestamp: new Date(n.timestamp)
         }));

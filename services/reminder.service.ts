@@ -169,7 +169,7 @@ class ReminderService {
 export const reminderService = ReminderService.getInstance();
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  // @ts-ignore
+  // @ts-expect-error - Expor para testes no console
   window.__reminderService = reminderService;
   console.log('🔔 reminderService disponível em window.__reminderService');
 }

@@ -22,18 +22,18 @@ export function NotificationBell() {
   const [showClearModal, setShowClearModal] = useState(false);
 
   useEffect(() => {
-    // Sincronizar com configurações
-    notificationService.syncWithSettings();
+    const loadNotifications = () => {
+      notificationService.syncWithSettings();
+      setNotifications(notificationService.getVisibleNotifications());
+      setUnreadCount(notificationService.getUnreadCount());
+    };
 
-    // Inscrever-se para atualizações
+    loadNotifications();
+
     const unsubscribe = notificationService.subscribe((items) => {
       setNotifications(items);
       setUnreadCount(items.filter(n => !n.read).length);
     });
-
-    // Carregar estado inicial
-    setNotifications(notificationService.getVisibleNotifications());
-    setUnreadCount(notificationService.getUnreadCount());
 
     return () => unsubscribe();
   }, []);

@@ -4,24 +4,7 @@
 import { TaskNotes } from "./TaskNotes";
 import { TaskSubtasks } from "./TaskSubtasks";
 import { TaskActions } from "./TaskActions";
-
-interface TaskSubtask {
-  id: string;
-  text: string;
-  completed: boolean;
-}
-
-interface Task {
-  id: string;
-  text: string;
-  completed: boolean;
-  priority?: "baixa" | "media" | "alta";
-  dueDate?: string;
-  tags?: string[];
-  notes?: string;
-  subtasks?: TaskSubtask[];
-  createdAt: Date;
-}
+import { Task } from "@/hooks/useTasks";
 
 interface TaskItemProps {
   task: Task;

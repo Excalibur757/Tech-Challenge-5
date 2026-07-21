@@ -7,7 +7,7 @@ import { notificationService } from '@/services/notification.service';
 import { reminderService } from '@/services/reminder.service';
 import { historyService } from '@/services/history.service';
 
-interface Task {
+export interface Task {
   id: string;
   text: string;
   completed: boolean;

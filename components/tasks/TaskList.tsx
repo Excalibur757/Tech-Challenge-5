@@ -3,10 +3,11 @@
 
 import { TaskItem } from "./TaskItem";
 import { TaskEmptyState } from "./TaskEmptyState";
+import { Task } from "@/hooks/useTasks";
 
 interface TaskListProps {
-  tasks: any[];
-  filteredTasks: any[];
+  tasks: Task[];
+  filteredTasks: Task[];
   searchTerm: string;
   filter: string;
   mode: "simplificado" | "completo";
@@ -35,7 +36,7 @@ interface TaskListProps {
 }
 
 export function TaskList({
-  tasks,
+  //tasks,
   filteredTasks,
   searchTerm,
   filter,

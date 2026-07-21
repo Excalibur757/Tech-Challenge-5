@@ -11,7 +11,7 @@ interface TaskHeaderProps {
 
 export function TaskHeader({
   mode,
-  extraConfirmation,
+  //extraConfirmation,
   searchTerm,
   onSearchChange,
   onToggleMode,

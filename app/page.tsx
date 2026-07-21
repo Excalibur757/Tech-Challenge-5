@@ -13,8 +13,13 @@ import { useTasks } from "@/hooks/useTasks";
 import { useTaskFilters } from "@/hooks/useTaskFilters";
 import { useTaskStats } from "@/hooks/useTaskStats";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { TutorialOverlay } from "@/components/tutorial/TutorialOverlay";
+import { useState } from "react";
 
 export default function Home() {
+  // eslint-disable-next-line no-unused-vars
+  const [showTutorial, setShowTutorial] = useState(true);
+
   const {
     extraConfirmation,
     isLoading,
@@ -85,6 +90,10 @@ export default function Home() {
     }
   };
 
+  const handleTutorialComplete = () => {
+    setShowTutorial(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
@@ -98,6 +107,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <TutorialOverlay onComplete={handleTutorialComplete} />
       <Header />
 
       {/* Feedback Global (Alarme + Modal) */}

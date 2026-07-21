@@ -63,10 +63,13 @@ export function useAccessibilitySettings(): UseAccessibilitySettingsReturn {
 
   // Carregar configurações
   useEffect(() => {
-    const loadedSettings = loadSettings();
-    setSettings(loadedSettings);
-    setIsSaved(true);
-    setIsLoading(false);
+    const loadInitialSettings = async () => {
+      const loadedSettings = loadSettings();
+      setSettings(loadedSettings);
+      setIsSaved(true);
+      setIsLoading(false);
+    };
+    loadInitialSettings();
   }, []);
 
   // Aplicar configurações ao DOM

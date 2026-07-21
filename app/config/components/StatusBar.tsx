@@ -9,7 +9,7 @@ export default function StatusBar({
 }: StatusBarProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center text-sm border-t dark:border-gray-700 pt-4">
-      <div className="text-gray-500 dark:text-gray-400">
+      <div className="text-black dark:text-black">
         <p>
           📌 Status:{" "}
           {isSaved
@@ -18,7 +18,7 @@ export default function StatusBar({
         </p>
       </div>
 
-      <div className="text-gray-500 dark:text-gray-400">
+      <div className="text-black dark:text-black">
         <p>
           🔄{" "}
           {isDefaultSettings
@@ -27,7 +27,7 @@ export default function StatusBar({
         </p>
       </div>
 
-      <div className="md:col-span-2 text-gray-500 dark:text-gray-400">
+      <div className="md:col-span-2 text-black dark:text-black">
         <p className="text-xs opacity-75">
           As preferências serão mantidas por 1 ano após salvar
         </p>

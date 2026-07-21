@@ -21,12 +21,12 @@ interface TaskSubtasksProps {
 export function TaskSubtasks({
   taskId,
   subtasks,
-  newSubtask,
-  onNewSubtaskChange,
-  onAddSubtask,
+  // newSubtask,
+  // onNewSubtaskChange,
+  // onAddSubtask,
   onToggleSubtask,
   onDeleteSubtask,
-  onKeyPress,
+  // onKeyPress,
 }: TaskSubtasksProps) {
   if (!subtasks || subtasks.length === 0) return null;
 

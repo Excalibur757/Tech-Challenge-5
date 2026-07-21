@@ -4,9 +4,10 @@
 import { TaskNotes } from "./TaskNotes";
 import { TaskSubtasks } from "./TaskSubtasks";
 import { TaskActions } from "./TaskActions";
+import { Task } from "@/hooks/useTasks";
 
 interface TaskItemProps {
-  task: any;
+  task: Task;
   mode: "simplificado" | "completo";
   editingId: string | null;
   editText: string;

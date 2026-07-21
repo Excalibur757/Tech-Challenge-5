@@ -1,0 +1,51 @@
+name: CD
+
+# Executa quando houver push na main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Baixa o projeto
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # Configura o Node
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Instala dependências
+      - name: Instalar dependências
+        run: npm ci
+
+      # Gera a versão de produção
+      - name: Build de Produção
+        run: npm run build
+
+      # --------------------------------------------------
+      # Neste projeto não haverá deploy.
+      #
+      # Em um projeto real, aqui entraria o deploy para:
+      #
+      # - Vercel
+      # - AWS
+      # - Azure
+      # - VPS
+      # - Docker
+      # - Railway
+      #
+      # Como este projeto não será hospedado,
+      # o workflow termina após validar que o
+      # build de produção foi criado com sucesso.
+      # --------------------------------------------------
+
+      - name: Finalizado
+        run: echo "Deploy validado com sucesso!"

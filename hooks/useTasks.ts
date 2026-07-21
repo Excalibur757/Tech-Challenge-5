@@ -4,9 +4,10 @@
 import { useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
 import { notificationService } from '@/services/notification.service';
-import { reminderService } from '@/services/reminder.service'; // <-- Importar o reminder
+import { reminderService } from '@/services/reminder.service';
+import { historyService } from '@/services/history.service';
 
-interface Task {
+export interface Task {
   id: string;
   text: string;
   completed: boolean;
@@ -18,6 +19,11 @@ interface Task {
   reminder?: Date;
   tags?: string[];
 }
+
+type TaskData = Omit<Task, 'createdAt' | 'reminder'> & {
+  createdAt: string;
+  reminder?: string | null;
+};
 
 export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -44,26 +50,29 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
 
   // Carregar tarefas dos cookies
   useEffect(() => {
-    const savedTasks = Cookies.get("tasks");
-    if (savedTasks) {
-      try {
-        const parsed = JSON.parse(savedTasks);
-        const loadedTasks = parsed.map((t: any) => ({
-          ...t,
-          createdAt: new Date(t.createdAt),
-          dueDate: t.dueDate,
-          reminder: t.reminder ? new Date(t.reminder) : undefined
-        }));
-        setTasks(loadedTasks);
-        
-        // Verificar lembretes após carregar (com delay para garantir que tudo está pronto)
-        setTimeout(() => {
-          reminderService.checkReminders(loadedTasks);
-        }, 3000);
-      } catch (error) {
-        console.error("Erro ao carregar tarefas:", error);
+    const loadTasks = () => {
+      const savedTasks = Cookies.get("tasks");
+      if (savedTasks) {
+        try {
+          const parsed = JSON.parse(savedTasks);
+          const loadedTasks = parsed.map((t: TaskData) => ({
+            ...t,
+            createdAt: new Date(t.createdAt),
+            dueDate: t.dueDate,
+            reminder: t.reminder ? new Date(t.reminder) : undefined
+          }));
+          setTasks(loadedTasks);
+          
+          setTimeout(() => {
+            reminderService.checkReminders(loadedTasks);
+          }, 3000);
+        } catch (error) {
+          console.error("Erro ao carregar tarefas:", error);
+        }
       }
-    }
+    };
+
+    loadTasks();
   }, []);
 
   // Salvar tarefas nos cookies
@@ -76,7 +85,6 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   // Verificar lembretes periodicamente
   useEffect(() => {
     if (!isLoading && tasks.length > 0) {
-      // Verificar a cada 1 hora
       const interval = setInterval(() => {
         reminderService.checkReminders(tasks);
       }, 1000 * 60 * 60);
@@ -142,6 +150,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     setNewTask("");
     setNewTaskPriority("media");
     
+    // 📝 Adicionar ao histórico
+    historyService.addEntry(
+      "add",
+      task.text,
+      task.id,
+      `Prioridade: ${task.priority}`
+    );
+    
     // Notificação
     notificationService.addNotification(
       "📝 Nova tarefa",
@@ -161,6 +177,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     if (shouldConfirm()) {
       openModal("delete", id, task.text);
     } else {
+      // 📝 Adicionar ao histórico ANTES de deletar
+      historyService.addEntry(
+        "delete",
+        task.text,
+        task.id,
+        "Tarefa removida"
+      );
+      
       setTasks(tasks.filter(task => task.id !== id));
       notificationService.addNotification(
         "🗑️ Tarefa removida",
@@ -175,6 +199,15 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const confirmDelete = () => {
     if (modalTaskId) {
       const taskName = tasks.find(t => t.id === modalTaskId)?.text || "tarefa";
+      
+      // 📝 Adicionar ao histórico ANTES de deletar
+      historyService.addEntry(
+        "delete",
+        taskName,
+        modalTaskId,
+        "Tarefa removida"
+      );
+      
       setTasks(tasks.filter(task => task.id !== modalTaskId));
       notificationService.addNotification(
         "🗑️ Tarefa removida",
@@ -197,6 +230,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       ));
       
       if (newStatus) {
+        // 📝 Adicionar ao histórico
+        historyService.addEntry(
+          "complete",
+          task.text,
+          task.id,
+          "Tarefa concluída"
+        );
+        
         notificationService.addNotification(
           "🎉 Tarefa concluída!",
           `"${task.text}" foi concluída`,
@@ -205,6 +246,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
         );
         showAlertMessage(`Tarefa "${task.text}" concluída! 🎉`, "success");
       } else {
+        // 📝 Adicionar ao histórico
+        historyService.addEntry(
+          "reopen",
+          task.text,
+          task.id,
+          "Tarefa reaberta"
+        );
+        
         notificationService.addNotification(
           "🔄 Tarefa reaberta",
           `"${task.text}" foi reaberta`,
@@ -240,11 +289,24 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       return;
     }
     const task = tasks.find(t => t.id === id);
+    const oldText = task?.text || "";
+    
     setTasks(tasks.map(task =>
       task.id === id ? { ...task, text: editText.trim() } : task
     ));
     setEditingId(null);
     setEditText("");
+    
+    // 📝 Adicionar ao histórico se houve mudança
+    if (oldText !== editText.trim()) {
+      historyService.addEntry(
+        "edit",
+        editText.trim(),
+        task?.id,
+        `Antigo: "${oldText}"`
+      );
+    }
+    
     notificationService.addNotification(
       "✏️ Tarefa editada",
       `"${task?.text}" foi atualizada`,
@@ -262,10 +324,23 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   // ALTERAR PRIORIDADE
   const changePriority = (id: string, priority: "baixa" | "media" | "alta") => {
     const task = tasks.find(t => t.id === id);
+    const oldPriority = task?.priority || "media";
+    
     setTasks(tasks.map(task =>
       task.id === id ? { ...task, priority } : task
     ));
     setEditingPriority(null);
+    
+    // 📝 Adicionar ao histórico se houve mudança
+    if (oldPriority !== priority) {
+      historyService.addEntry(
+        "priority_change",
+        task?.text || "Tarefa",
+        task?.id,
+        `Prioridade: ${oldPriority} → ${priority}`
+      );
+    }
+    
     notificationService.addNotification(
       "🏷️ Prioridade alterada",
       `"${task?.text}" agora é prioridade ${priority}`,
@@ -291,6 +366,15 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
         ]
       } : task
     ));
+    
+    // 📝 Adicionar ao histórico
+    historyService.addEntry(
+      "subtask_add",
+      newSubtask.trim(),
+      taskId,
+      `Subtarefa de "${task?.text}"`
+    );
+    
     setNewSubtask("");
     notificationService.addNotification(
       "📋 Subtarefa adicionada",
@@ -320,6 +404,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
       if (shouldConfirm()) {
         openModal("deleteSubtask", taskId, subtask.text, subtaskId);
       } else {
+        // 📝 Adicionar ao histórico ANTES de deletar
+        historyService.addEntry(
+          "subtask_delete",
+          subtask.text,
+          taskId,
+          `Subtarefa removida de "${task.text}"`
+        );
+        
         setTasks(tasks.map(t =>
           t.id === taskId ? {
             ...t,
@@ -340,7 +432,15 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   const confirmDeleteSubtask = () => {
     if (modalTaskId && modalSubtaskId) {
       const task = tasks.find(t => t.id === modalTaskId);
-      const subtask = task?.subtasks?.find(st => st.id === modalSubtaskId);
+      // const subtask = task?.subtasks?.find(st => st.id === modalSubtaskId);
+      
+      // 📝 Adicionar ao histórico ANTES de deletar
+      historyService.addEntry(
+        "subtask_delete",
+        modalTaskName,
+        modalTaskId,
+        `Subtarefa removida de "${task?.text}"`
+      );
       
       setTasks(tasks.map(t =>
         t.id === modalTaskId ? {
@@ -377,6 +477,15 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     if (shouldConfirm()) {
       openModal("complete", null, "todas as tarefas");
     } else {
+      // 📝 Adicionar ao histórico
+      const pendingCount = tasks.filter(t => !t.completed).length;
+      historyService.addEntry(
+        "complete_all",
+        `${pendingCount} tarefas`,
+        undefined,
+        "Todas as tarefas concluídas"
+      );
+      
       setTasks(tasks.map(t => ({ ...t, completed: true })));
       notificationService.addNotification(
         "✅ Todas concluídas!",
@@ -388,6 +497,16 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
   };
 
   const confirmCompleteAll = () => {
+    const pendingCount = tasks.filter(t => !t.completed).length;
+    
+    // 📝 Adicionar ao histórico
+    historyService.addEntry(
+      "complete_all",
+      `${pendingCount} tarefas`,
+      undefined,
+      "Todas as tarefas concluídas"
+    );
+    
     setTasks(tasks.map(t => ({ ...t, completed: true })));
     notificationService.addNotification(
       "✅ Todas concluídas!",
@@ -408,6 +527,14 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
     if (shouldConfirm()) {
       openModal("clear", null, `${completedTasks.length} tarefas concluídas`);
     } else {
+      // 📝 Adicionar ao histórico
+      historyService.addEntry(
+        "clear_completed",
+        `${completedTasks.length} tarefas`,
+        undefined,
+        "Tarefas concluídas removidas"
+      );
+      
       setTasks(tasks.filter(t => !t.completed));
       notificationService.addNotification(
         "🧹 Tarefas removidas",
@@ -420,6 +547,15 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
 
   const confirmClearCompleted = () => {
     const count = tasks.filter(t => t.completed).length;
+    
+    // 📝 Adicionar ao histórico
+    historyService.addEntry(
+      "clear_completed",
+      `${count} tarefas`,
+      undefined,
+      "Tarefas concluídas removidas"
+    );
+    
     setTasks(tasks.filter(t => !t.completed));
     notificationService.addNotification(
       "🧹 Tarefas removidas",

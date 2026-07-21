@@ -13,6 +13,7 @@ import ActionButtons from "./components/ActionButtons";
 import StatusBar from "./components/StatusBar";
 import Botao from "@/utils/botao";
 import Modal from "@/utils/modal";
+import { TutorialConfig } from "./components/TutorialConfig";
 
 export default function ConfiguracoesPage() {
   const {
@@ -25,8 +26,8 @@ export default function ConfiguracoesPage() {
     isDefaultSettings,
     showConfirmModal,
     pendingAction,
-    handleSaveSettings,
-    resetToDefaults,
+    //handleSaveSettings,
+    //resetToDefaults,
     hideAlert,
     handleFontSizeChange,
     handleLineHeightChange,
@@ -87,6 +88,8 @@ export default function ConfiguracoesPage() {
           handleExtraConfirmationChange={handleExtraConfirmationChange}
           handleNotificationPreferenceChange={handleNotificationPreferenceChange}
         />
+
+        <TutorialConfig />
 
         <PreviewSection settings={settings} />
 

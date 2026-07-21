@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "./notification/NotificationBell";
+import { HistoryPanel } from "./history/HistoryPanel";
 
 export default function Header() {
   const [user, setUser] = useState<string | null>(null);
@@ -10,18 +11,18 @@ export default function Header() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  function syncUserName() {
-    if (typeof window === "undefined") return;
-
-    const storedName = localStorage.getItem("authName") || localStorage.getItem("authUser") || null;
-    setUser(storedName);
-  }
-
+  // components/header.tsx
   useEffect(() => {
+    const syncUserName = () => {
+      const name = localStorage.getItem("authName") || localStorage.getItem("authUser") || "";
+      setUser(name);
+    };
+
     syncUserName();
 
     const handleStorage = () => syncUserName();
     window.addEventListener("storage", handleStorage);
+    
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
@@ -57,7 +58,8 @@ export default function Header() {
         >
           SeniorEase
         </button>
-
+        
+        <HistoryPanel />
         <NotificationBell />
 
         <div className="relative" ref={menuRef}>

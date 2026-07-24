@@ -104,7 +104,8 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-[#1e2939] px-4 py-2.5 font-semibold text-white transition hover:bg-[#0f172a]"
+          className="w-full rounded-lg bg-[#1e2939] px-4 py-2.5 font-semibold text-white transition hover:bg-[#0f172a] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1e2939] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
+          title={isRegisterMode ? 'Cadastrar-se' : 'Entrar'}
         >
           {isRegisterMode ? 'Cadastrar-se' : 'Entrar'}
         </button>
@@ -116,7 +117,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className="font-semibold text-[#2563eb] transition hover:text-[#1d4ed8]"
+                className="font-semibold text-[#2563eb] transition hover:text-[#1d4ed8] cursor-pointer"
               >
                 Entrar
               </button>
@@ -127,7 +128,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode('register')}
-                className="font-semibold text-[#2563eb] transition hover:text-[#1d4ed8]"
+                className="font-semibold text-[#2563eb] transition hover:text-[#1d4ed8] cursor-pointer"
               >
                 Cadastrar-se
               </button>

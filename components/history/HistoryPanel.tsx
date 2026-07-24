@@ -104,8 +104,8 @@ export function HistoryPanel() {
       {/* Botão do Histórico */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-1.5 sm:p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-        title="Histórico"
+        className="relative p-1.5 sm:p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        title="Abrir histórico de atividades"
       >
         <span className="text-xl sm:text-2xl">📜</span>
         {history.length > 0 && (
@@ -168,7 +168,8 @@ export function HistoryPanel() {
                   {history.length > 0 && (
                     <button
                       onClick={handleClearHistory}
-                      className="text-xs text-red-600 dark:text-red-400 hover:underline whitespace-nowrap"
+                      className="text-xs text-red-600 dark:text-red-400 hover:underline whitespace-nowrap cursor-pointer"
+                      title="Limpar todo o histórico de atividades"
                     >
                       Limpar
                     </button>
@@ -182,11 +183,12 @@ export function HistoryPanel() {
                   <button
                     key={action}
                     onClick={() => setFilter(action as any)}
-                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs transition-colors whitespace-nowrap shrink-0 ${
+                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                       filter === action
                         ? 'bg-purple-600 text-white'
                         : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                     }`}
+                    title={`Filtrar por ${action === 'all' ? 'todas as atividades' : getActionLabel(action as HistoryEntry['action']).toLowerCase()}`}
                   >
                     {action === "all" ? "Todas" : getActionLabel(action as HistoryEntry["action"])}
                   </button>

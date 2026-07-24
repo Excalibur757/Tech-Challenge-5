@@ -260,7 +260,7 @@ export function useTasks(extraConfirmation: boolean, isLoading: boolean) {
           "notification",
           task.id
         );
-        showAlertMessage(`Tarefa "${task.text}" reaberta!`, "info");
+        showAlertMessage(`Tarefa "${task.text}" reaberta!`, "warning");
       }
     }
   };

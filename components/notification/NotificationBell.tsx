@@ -77,8 +77,8 @@ export function NotificationBell() {
     <div className="">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-        title="Notificações"
+        className="relative p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        title="Abrir notificações"
       >
         <span className="text-2xl">🔔</span>
         {unreadCount > 0 && (
@@ -108,7 +108,8 @@ export function NotificationBell() {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    title="Marcar todas as notificações como lidas"
                   >
                     Ler todas
                   </button>
@@ -116,7 +117,8 @@ export function NotificationBell() {
                 {notifications.length > 0 && (
                   <button
                     onClick={handleClearAll}
-                    className="text-xs text-red-600 dark:text-red-400 hover:underline"
+                    className="text-xs text-red-600 dark:text-red-400 hover:underline cursor-pointer"
+                    title="Limpar todas as notificações"
                   >
                     Limpar
                   </button>

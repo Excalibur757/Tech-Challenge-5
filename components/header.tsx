@@ -43,6 +43,7 @@ export default function Header() {
       localStorage.removeItem("authUser");
       localStorage.removeItem("authName");
       localStorage.removeItem("authPassword");
+      localStorage.removeItem("tutorial_completed");
     }
     setMenuOpen(false);
     router.push("/login");
@@ -54,7 +55,8 @@ export default function Header() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="rounded px-2 py-1 font-semibold text-gray-100 transition hover:bg-slate-700"
+          className="rounded px-2 py-1 font-semibold text-gray-100 transition hover:bg-slate-700 cursor-pointer"
+          title="Voltar para a tela inicial"
         >
           SeniorEase
         </button>
@@ -66,7 +68,8 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="flex items-center gap-3 rounded px-2 py-1 text-gray-100 transition hover:bg-slate-700"
+            className="flex items-center gap-3 rounded px-2 py-1 text-gray-100 transition hover:bg-slate-700 cursor-pointer"
+            title="Abrir menu do usuário"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-600 text-sm font-medium text-slate-100">
               {user ? user.charAt(0).toUpperCase() : "?"}
@@ -82,7 +85,8 @@ export default function Header() {
                   setMenuOpen(false);
                   router.push("/");
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700 cursor-pointer"
+                title="Ir para a tela inicial"
               >
                 <span aria-hidden="true">🏠</span>
                 <span>Tela Inicial</span>
@@ -93,7 +97,8 @@ export default function Header() {
                   setMenuOpen(false);
                   router.push("/config");
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700 cursor-pointer"
+                title="Abrir configurações"
               >
                 <span aria-hidden="true">⚙️</span>
                 <span>Configurações</span>
@@ -104,7 +109,8 @@ export default function Header() {
                   setMenuOpen(false);
                   router.push("/perfil");
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700 cursor-pointer"
+                title="Visualizar e editar perfil"
               >
                 <span aria-hidden="true">👤</span>
                 <span>Perfil</span>
@@ -112,7 +118,8 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-100 transition hover:bg-slate-700 cursor-pointer"
+                title="Sair da aplicação"
               >
                 <span aria-hidden="true">🚪</span>
                 <span>Sair</span>

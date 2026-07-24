@@ -53,7 +53,8 @@ export function TaskInput({
           />
           <button
             onClick={onAddTask}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-lg"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-lg cursor-pointer"
+            title="Adicionar nova tarefa à lista"
           >
             Adicionar
           </button>
@@ -66,12 +67,12 @@ export function TaskInput({
               <button
                 key={option.value}
                 onClick={() => onPriorityChange(option.value as "baixa" | "media" | "alta")}
-                className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                className={`px-3 py-1 rounded-full text-sm transition-colors cursor-pointer ${
                   newTaskPriority === option.value
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                 }`}
-                title={`Prioridade ${option.value}`}
+                title={`Selecionar prioridade ${option.value === 'baixa' ? 'baixa' : option.value === 'media' ? 'média' : 'alta'}`}
               >
                 {option.label}
               </button>
@@ -88,11 +89,12 @@ export function TaskInput({
               <button
                 key={f}
                 onClick={() => onFilterChange(f)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                   filter === f
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                 }`}
+                title={`Filtrar tarefas ${f === 'todas' ? 'todas' : f === 'ativas' ? 'ativas' : 'concluídas'}`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
@@ -101,7 +103,8 @@ export function TaskInput({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortType)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white cursor-pointer"
+            title="Ordenar tarefas por data, prioridade ou ordem alfabética"
           >
             {sortOptions.map((option) => (
               <option key={option} value={option}>

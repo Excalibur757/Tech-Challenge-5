@@ -77,7 +77,7 @@ export function TaskItem({
         {/* Botão de toggle */}
         <button
           onClick={() => onToggleTask(task.id)}
-          className={`mt-1 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+          className={`mt-1 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
             task.completed
               ? "bg-green-500 border-green-500 text-white"
               : "border-gray-300 dark:border-gray-600 hover:border-blue-500"
@@ -104,13 +104,15 @@ export function TaskItem({
               />
               <button
                 onClick={() => onSaveEdit(task.id)}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors cursor-pointer"
+                title="Salvar alterações na tarefa"
               >
                 Salvar
               </button>
               <button
                 onClick={onCancelEdit}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg transition-colors cursor-pointer"
+                title="Cancelar edição e descartar alterações"
               >
                 Cancelar
               </button>
@@ -143,7 +145,7 @@ export function TaskItem({
                             <button
                               key={p}
                               onClick={() => onChangePriority(task.id, p as "baixa" | "media" | "alta")}
-                              className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                              className={`text-xs px-2 py-1 rounded-full transition-colors cursor-pointer ${
                                 task.priority === p
                                   ? p === "alta" 
                                     ? "bg-red-600 text-white"
@@ -152,13 +154,15 @@ export function TaskItem({
                                       : "bg-green-600 text-white"
                                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                               }`}
+                              title={`Definir prioridade como ${p === 'alta' ? 'alta' : p === 'media' ? 'média' : 'baixa'}`}
                             >
                               {p === "alta" && "🔴"} {p === "media" && "🟡"} {p === "baixa" && "🟢"} {p.charAt(0).toUpperCase() + p.slice(1)}
                             </button>
                           ))}
                           <button
                             onClick={() => setEditingPriority(null)}
-                            className="text-xs px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded-full"
+                            className="text-xs px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer"
+                            title="Cancelar edição de prioridade"
                           >
                             ✕
                           </button>
@@ -173,7 +177,7 @@ export function TaskItem({
                                 ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                                 : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                           }`}
-                          title="Clique para alterar a prioridade"
+                          title={`Prioridade ${task.priority === 'alta' ? 'alta' : task.priority === 'media' ? 'média' : 'baixa'} - Clique para alterar`}
                         >
                           {task.priority === "alta" && "🔴"}
                           {task.priority === "media" && "🟡"}
@@ -247,7 +251,8 @@ export function TaskItem({
             />
             <button
               onClick={() => onAddSubtask(task.id)}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm cursor-pointer"
+              title="Adicionar uma subtarefa a esta tarefa"
             >
               Adicionar
             </button>

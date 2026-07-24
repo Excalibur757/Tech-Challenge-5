@@ -35,7 +35,7 @@ export function TaskHeader({
           <div className="w-full sm:w-auto">
             <button
               onClick={onToggleMode}
-              className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
               title={mode === "simplificado" ? "Ativar modo completo com mais recursos" : "Voltar ao modo simplificado mais focado"}
             >
               <span>{mode === "simplificado" ? "🔧" : "🧊"}</span>
@@ -63,7 +63,7 @@ export function TaskHeader({
               {searchTerm && (
                 <button
                   onClick={() => onSearchChange("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
                   title="Limpar busca"
                 >
                   ✕

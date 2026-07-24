@@ -28,22 +28,22 @@ export function TaskActions({
         <>
           <button
             onClick={() => onShowSubtasks(taskId)}
-            className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900 rounded-lg transition-colors"
-            title="Gerenciar subtarefas"
+            className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900 rounded-lg transition-colors cursor-pointer"
+            title="Gerenciar subtarefas dessa tarefa"
           >
             📋
           </button>
           <button
             onClick={() => onShowNotes(taskId)}
-            className="p-2 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900 rounded-lg transition-colors"
-            title="Adicionar notas"
+            className="p-2 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900 rounded-lg transition-colors cursor-pointer"
+            title="Adicionar ou editar notas da tarefa"
           >
             📝
           </button>
           <button
             onClick={() => onStartEdit(taskId, taskText)}
-            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
-            title="Editar tarefa"
+            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors cursor-pointer"
+            title="Editar o texto da tarefa"
           >
             ✏️
           </button>
@@ -51,8 +51,8 @@ export function TaskActions({
       )}
       <button
         onClick={() => onDeleteTask(taskId)}
-        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
-        title="Excluir tarefa"
+        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors cursor-pointer"
+        title="Excluir essa tarefa permanentemente"
       >
         🗑️
       </button>

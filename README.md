@@ -199,8 +199,8 @@ npm run lint
 
 Gravamos um vídeo para demonstrar todo o fluxo e as funcionalidades da aplicação.
 
-➡️ [Assista ao vídeo via Drive](https://drive.google.com/file/d/SEU_LINK_AQUI/view?usp=sharing).
-➡️ [Assista ao vídeo via YouTube](https://youtu.be/SEU_LINK_AQUI).
+➡️ [Assista ao vídeo via Drive](https://drive.google.com/file/d/122uS8JA73GHsC4FXNLs46GUnXlSkSKwn/view).
+➡️ [Assista ao vídeo via YouTube](https://youtu.be/11x8ZeGEhFg).
 
 <br />
 
